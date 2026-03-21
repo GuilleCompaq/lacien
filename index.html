@@ -994,10 +994,10 @@
 <script>
 // ── DATA ──
 const stations = [
-  { id:1, name:"Rock Clásico FM", freq:"98.5 FM", emoji:"🎸", grad:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)", track:"Stairway to Heaven — Led Zeppelin", genre:"Rock", listeners:"12.4K" },
-  { id:2, name:"Salsa Latina", freq:"102.3 FM", emoji:"🎺", grad:"linear-gradient(135deg,#1a0a00,#3d1c00,#7a3200)", track:"La Rebelión — Joe Arroyo", genre:"Salsa", listeners:"8.2K" },
-  { id:3, name:"Jazz Nights", freq:"90.7 FM", emoji:"🎷", grad:"linear-gradient(135deg,#0a1a2e,#122040,#1a3a5c)", track:"So What — Miles Davis", genre:"Jazz", listeners:"5.1K" },
-  { id:4, name:"Electro Club", freq:"105.1 FM", emoji:"🎧", grad:"linear-gradient(135deg,#1a0030,#2d0050,#4a0080)", track:"Strobe — deadmau5", genre:"Electrónica", listeners:"18.7K" },
+  { id:1, name:"FM-100", freq:"99.9 FM", emoji:"🎸", grad:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)", track:"La numero 1 del pais", genre:"Rock", listeners:"12.4K" },
+  { id:2, name:"FM-Aspen", freq:"102.3 FM", emoji:"🎺", grad:"linear-gradient(135deg,#1a0a00,#3d1c00,#7a3200)", track:"Desde rosario", genre:"Salsa", listeners:"8.2K" },
+  { id:3, name:"FM-Disney", freq:"94.3 FM", emoji:"🎷", grad:"linear-gradient(135deg,#0a1a2e,#122040,#1a3a5c)", track:"So What — Miles Davis", genre:"Jazz", listeners:"5.1K" },
+  { id:4, name:"FM-Vida", freq:"94.9. FM", emoji:"🎧", grad:"linear-gradient(135deg,#1a0030,#2d0050,#4a0080)", track:"Strobe — deadmau5", genre:"Electrónica", listeners:"18.7K" },
   { id:5, name:"Pop Hits Radio", freq:"94.3 FM", emoji:"🎤", grad:"linear-gradient(135deg,#1a001a,#30003a,#5a0060)", track:"Flowers — Miley Cyrus", genre:"Pop", listeners:"22.1K" },
   { id:6, name:"Cumbia Boom", freq:"96.5 FM", emoji:"🥁", grad:"linear-gradient(135deg,#1a1000,#362200,#5c3a00)", track:"La Pollera Colora — Los Corraleros", genre:"Cumbia", listeners:"9.8K" },
   { id:7, name:"Clásica Buenos Aires", freq:"88.7 FM", emoji:"🎻", grad:"linear-gradient(135deg,#0d1a0d,#1a2e1a,#2e4a2e)", track:"Sinfonía Nº9 — Beethoven", genre:"Clásica", listeners:"3.4K" },
@@ -1022,8 +1022,12 @@ let progress = 0;
 
 // ── AUDIO STREAMS (públicos) ──
 const streams = {
-  9: "https://stream.zeno.fm/f3wvbbqmdg8uv", // Lofi
-  default: null
+  1: "https://playerservices.streamtheworld.com/api/livestream-redirect/FM999_56.mp3", // La 100
+  2: "https://playerservices.streamtheworld.com/api/livestream-redirect/ASPEN.mp3",
+  3: "https://playerservices.streamtheworld.com/api/livestream-redirect/DISNEY_ARG_BA_ADP.aac?time=1774119922634",
+  4: "https://streaming450tb.locucionar.com/proxy/fmvida979?mp=/stream", // Vida rosario
+  default: 4
+  
 };
 
 // ── BUILD UI ──
