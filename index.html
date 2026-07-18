@@ -157,6 +157,7 @@
     padding: 1px 5px; border-radius: 4px;
     letter-spacing: 0.5px; text-transform: uppercase;
     border: 1.5px solid var(--bg);
+    z-index: 3;
   }
 
   .story-name {
@@ -223,6 +224,7 @@
     background: linear-gradient(to top, rgba(0,0,0,0.85) 40%, transparent);
     display: flex; flex-direction: column; justify-content: flex-end;
     padding: 20px;
+    z-index: 2;
   }
 
   .featured-tag {
@@ -266,6 +268,7 @@
     border: 1px solid rgba(255,255,255,0.3);
     cursor: pointer;
     transition: all 0.2s;
+    z-index: 3;
   }
   .featured-play-btn:hover { background: rgba(255,255,255,0.35); transform: scale(1.1); }
 
@@ -308,9 +311,10 @@
     position: absolute; bottom: 0; left: 0; right: 0;
     height: 50%;
     background: linear-gradient(to top, var(--surface), transparent);
+    z-index: 1;
   }
 
-  .card-body { padding: 10px 12px 12px; }
+  .card-body { padding: 10px 12px 12px; position: relative; z-index: 2; }
 
   .card-name {
     font-family: 'Syne', sans-serif;
@@ -332,6 +336,7 @@
   .card-footer {
     padding: 0 12px 10px;
     display: flex; justify-content: space-between; align-items: center;
+    position: relative; z-index: 2;
   }
 
   .freq-tag {
@@ -385,7 +390,15 @@
     overflow: hidden;
   }
 
-  .horiz-body { padding: 10px; }
+  .horiz-thumb::after {
+    content:'';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(to top, var(--surface), transparent);
+    z-index: 1;
+  }
+
+  .horiz-body { padding: 10px; position: relative; z-index: 2; }
   .horiz-name {
     font-family: 'Syne', sans-serif;
     font-size: 12px; font-weight: 700;
@@ -452,18 +465,18 @@
     animation: rotate-art 8s linear infinite;
   }
   @keyframes rotate-art {
-    from { border-radius: 12px; }
-    to { border-radius: 12px; transform: rotate(360deg); }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 
-  /* vinyl effect */
   .player-art::after {
     content:'';
     position: absolute; inset: 0;
     background: radial-gradient(circle at center, rgba(0,0,0,0.4) 20%, transparent 70%);
+    z-index: 1;
   }
 
-  .player-info { flex: 1; min-width: 0; }
+  .player-info { flex: 1; min-width: 0; position: relative; z-index: 2; }
 
   .player-station {
     font-family: 'Syne', sans-serif;
@@ -482,7 +495,7 @@
     80%, 100% { transform: translateX(-30%); }
   }
 
-  .player-controls { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+  .player-controls { display:flex; align-items:center; gap:8px; flex-shrink:0; position: relative; z-index: 2; }
 
   .ctrl-btn {
     width: 36px; height: 36px;
@@ -517,6 +530,7 @@
     background: var(--surface2);
     border-radius: 2px;
     overflow: hidden;
+    z-index: 3;
   }
   .progress-fill {
     height: 100%;
@@ -608,6 +622,7 @@
     animation: modal-spin 12s linear infinite;
     animation-play-state: paused;
     border: 3px solid var(--border);
+    overflow: hidden;
   }
 
   .modal-art.spinning { animation-play-state: running; }
@@ -626,7 +641,7 @@
     border: 3px solid var(--border);
   }
 
-  .modal-info { text-align: center; padding: 0 24px 24px; }
+  .modal-info { text-align: center; padding: 0 24px 24px; position: relative; z-index: 2; }
   .modal-station-name {
     font-family: 'Syne', sans-serif;
     font-size: 26px; font-weight: 800;
@@ -643,7 +658,6 @@
     letter-spacing: 1px;
   }
 
-  /* live indicator */
   .live-indicator {
     display: inline-flex; align-items: center; gap: 6px;
     background: rgba(255,92,170,0.15);
@@ -655,8 +669,7 @@
   }
   .live-indicator .dot { width:6px; height:6px; background:var(--accent1); border-radius:50%; animation: blink 1.2s infinite; }
 
-  /* volume */
-  .volume-wrap { padding: 0 24px 24px; }
+  .volume-wrap { padding: 0 24px 24px; position: relative; z-index: 2; }
   .vol-row { display:flex; align-items:center; gap:10px; }
   .vol-icon { color: var(--muted); }
   .vol-icon svg { width:18px; height:18px; }
@@ -681,6 +694,7 @@
   .modal-controls {
     display: flex; align-items: center; justify-content: center; gap: 20px;
     padding: 0 24px 28px;
+    position: relative; z-index: 2;
   }
 
   .m-ctrl {
@@ -712,6 +726,7 @@
   .modal-actions {
     display: flex; justify-content: space-around;
     padding: 0 24px;
+    position: relative; z-index: 2;
   }
   .modal-action-btn {
     display: flex; flex-direction:column; align-items:center; gap:4px;
@@ -723,13 +738,13 @@
   .modal-action-btn svg { width:22px; height:22px; }
   .modal-action-btn.liked { color: var(--accent1); }
 
-  /* Waveform visual */
   .modal-waveform {
     display: flex; align-items: center; justify-content: center;
     gap: 3px; height: 48px;
     padding: 0 24px;
     margin-bottom: 16px;
     overflow: hidden;
+    position: relative; z-index: 2;
   }
   .modal-wave-bar {
     width: 3px; border-radius: 3px;
@@ -747,7 +762,6 @@
     to { height: 40px; }
   }
 
-  /* ── MISC ── */
   .section-header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 0 12px;
@@ -761,7 +775,6 @@
     cursor: pointer; font-weight: 500;
   }
 
-  /* gradient bg accent */
   body::before {
     content:'';
     position: fixed; top: -200px; right: -100px;
@@ -778,6 +791,17 @@
   }
 
   header, main, .stories-section, .categories { position: relative; z-index: 1; }
+
+  /* ── NUEVO: ESTILOS PARA LAS IMÁGENES DE LAS ESTACIONES ── */
+  .station-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: block;
+  }
 </style>
 </head>
 <body>
@@ -814,7 +838,7 @@
 
   <!-- FEATURED -->
   <div class="featured-card" id="featuredCard">
-    <div class="featured-bg" id="featuredBg">🎸</div>
+    <div class="featured-bg" id="featuredBg"></div>
     <div class="featured-overlay">
       <div class="featured-tag">
         <span class="dot"></span> EN VIVO
@@ -856,7 +880,7 @@
 
 <!-- NOW PLAYING BAR -->
 <div class="player-bar" id="playerBar" onclick="openModal()">
-  <div class="player-art" id="playerArt">🎸</div>
+  <div class="player-art" id="playerArt"></div>
   <div class="player-info">
     <div class="player-station" id="playerStation">Rock Clásico FM</div>
     <div class="player-track" id="playerTrack">🎵 Led Zeppelin • Stairway to Heaven</div>
@@ -915,7 +939,7 @@
   </div>
 
   <div class="modal-art-wrap">
-    <div class="modal-art" id="modalArt">🎸</div>
+    <div class="modal-art" id="modalArt"></div>
   </div>
 
   <div class="modal-info">
@@ -993,19 +1017,20 @@
 
 <script>
 // ── DATA ──
+// NOTA: El campo 'emoji' ahora contiene URLs de imágenes optimizadas (400x400)
 const stations = [
-  { id:1, name:"La Cien", freq:"99.9 FM", emoji:"U+1F61C", grad:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)", track:"La numero 1 del pais", genre:"Rock", listeners:"12.4K" },
-  { id:2, name:"FM-Aspen", freq:"102.3 FM", emoji:"🎺", grad:"linear-gradient(135deg,#1a0a00,#3d1c00,#7a3200)", track:"Desde rosario", genre:"Salsa", listeners:"8.2K" },
-  { id:3, name:"FM-Disney", freq:"94.3 FM", emoji:"🎷", grad:"linear-gradient(135deg,#0a1a2e,#122040,#1a3a5c)", track:"So What — Miles Davis", genre:"Jazz", listeners:"5.1K" },
-  { id:4, name:"FM-Vida", freq:"94.9. FM", emoji:"🎧", grad:"linear-gradient(135deg,#1a0030,#2d0050,#4a0080)", track:"Strobe — deadmau5", genre:"Electrónica", listeners:"18.7K" },
-  { id:5, name:"Pop Hits Radio", freq:"94.3 FM", emoji:"🎤", grad:"linear-gradient(135deg,#1a001a,#30003a,#5a0060)", track:"Flowers — Miley Cyrus", genre:"Pop", listeners:"22.1K" },
-  { id:6, name:"Cumbia Boom", freq:"96.5 FM", emoji:"🥁", grad:"linear-gradient(135deg,#1a1000,#362200,#5c3a00)", track:"La Pollera Colora — Los Corraleros", genre:"Cumbia", listeners:"9.8K" },
-  { id:7, name:"Clásica Buenos Aires", freq:"88.7 FM", emoji:"🎻", grad:"linear-gradient(135deg,#0d1a0d,#1a2e1a,#2e4a2e)", track:"Sinfonía Nº9 — Beethoven", genre:"Clásica", listeners:"3.4K" },
-  { id:8, name:"Reggaeton Fuego", freq:"107.9 FM", emoji:"🔥", grad:"linear-gradient(135deg,#1a0a00,#2e1500,#4a2500)", track:"Gasolina — Daddy Yankee", genre:"Reggaeton", listeners:"31.2K" },
-  { id:9, name:"Lofi Chill", freq:"Online", emoji:"☁️", grad:"linear-gradient(135deg,#0a0a1a,#0f0f2e,#1a1a42)", track:"Rainy Day — lofi girl", genre:"Lofi", listeners:"45.8K" },
-  { id:10, name:"Tango del Plata", freq:"91.5 FM", emoji:"🌹", grad:"linear-gradient(135deg,#1a0000,#2e0a0a,#4a1515)", track:"Por una Cabeza — Gardel", genre:"Tango", listeners:"6.3K" },
-  { id:11, name:"Indie Alternativo", freq:"103.5 FM", emoji:"🎵", grad:"linear-gradient(135deg,#0a1a0a,#152a15,#204020)", track:"Mr. Brightside — The Killers", genre:"Indie", listeners:"11.5K" },
-  { id:12, name:"Folklore Andino", freq:"93.7 FM", emoji:"🪘", grad:"linear-gradient(135deg,#0f0a00,#1e1400,#332100)", track:"El Cóndor Pasa", genre:"Folklore", listeners:"4.7K" },
+  { id:1, name:"FM-100", freq:"99.9 FM", emoji:"https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)", track:"La numero 1 del pais", genre:"Rock", listeners:"12.4K" },
+  { id:2, name:"FM-Aspen", freq:"102.3 FM", emoji:"https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#1a0a00,#3d1c00,#7a3200)", track:"Desde rosario", genre:"Salsa", listeners:"8.2K" },
+  { id:3, name:"FM-Disney", freq:"94.3 FM", emoji:"https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#0a1a2e,#122040,#1a3a5c)", track:"So What — Miles Davis", genre:"Jazz", listeners:"5.1K" },
+  { id:4, name:"FM-Vida", freq:"94.9. FM", emoji:"https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#1a0030,#2d0050,#4a0080)", track:"Strobe — deadmau5", genre:"Electrónica", listeners:"18.7K" },
+  { id:5, name:"Pop Hits Radio", freq:"94.3 FM", emoji:"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#1a001a,#30003a,#5a0060)", track:"Flowers — Miley Cyrus", genre:"Pop", listeners:"22.1K" },
+  { id:6, name:"Cumbia Boom", freq:"96.5 FM", emoji:"https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#1a1000,#362200,#5c3a00)", track:"La Pollera Colora — Los Corraleros", genre:"Cumbia", listeners:"9.8K" },
+  { id:7, name:"Clásica Buenos Aires", freq:"88.7 FM", emoji:"https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#0d1a0d,#1a2e1a,#2e4a2e)", track:"Sinfonía Nº9 — Beethoven", genre:"Clásica", listeners:"3.4K" },
+  { id:8, name:"Reggaeton Fuego", freq:"107.9 FM", emoji:"https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#1a0a00,#2e1500,#4a2500)", track:"Gasolina — Daddy Yankee", genre:"Reggaeton", listeners:"31.2K" },
+  { id:9, name:"Lofi Chill", freq:"Online", emoji:"https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#0a0a1a,#0f0f2e,#1a1a42)", track:"Rainy Day — lofi girl", genre:"Lofi", listeners:"45.8K" },
+  { id:10, name:"Tango del Plata", freq:"91.5 FM", emoji:"https://images.unsplash.com/photo-1504609813442-a8924e83f76e?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#1a0000,#2e0a0a,#4a1515)", track:"Por una Cabeza — Gardel", genre:"Tango", listeners:"6.3K" },
+  { id:11, name:"Indie Alternativo", freq:"103.5 FM", emoji:"https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#0a1a0a,#152a15,#204020)", track:"Mr. Brightside — The Killers", genre:"Indie", listeners:"11.5K" },
+  { id:12, name:"Folklore Andino", freq:"93.7 FM", emoji:"https://images.unsplash.com/photo-1513883049090-d0b7439799bf?w=400&h=400&fit=crop", grad:"linear-gradient(135deg,#0f0a00,#1e1400,#332100)", track:"El Cóndor Pasa", genre:"Folklore", listeners:"4.7K" },
 ];
 
 const chillStations = [0,2,6,8,11].map(i=>stations[i]);
@@ -1020,14 +1045,12 @@ let liked = false;
 let audioEl = null;
 let progress = 0;
 
-// ── AUDIO STREAMS (públicos) ──
 const streams = {
-  1: "https://playerservices.streamtheworld.com/api/livestream-redirect/FM999_56.mp3", // La 100
+  1: "https://playerservices.streamtheworld.com/api/livestream-redirect/FM999_56.mp3",
   2: "https://playerservices.streamtheworld.com/api/livestream-redirect/ASPEN.mp3",
   3: "https://playerservices.streamtheworld.com/api/livestream-redirect/DISNEY_ARG_BA_ADP.aac?time=1774119922634",
-  4: "https://streaming450tb.locucionar.com/proxy/fmvida979?mp=/stream", // Vida rosario
+  4: "https://streaming450tb.locucionar.com/proxy/fmvida979?mp=/stream",
   default: 4
-  
 };
 
 // ── BUILD UI ──
@@ -1040,7 +1063,9 @@ function buildStories() {
     el.innerHTML = `
       <div class="story-ring ${gradClasses[i]}">
         ${i<3?'<div class="story-pulse"></div>':''}
-        <div class="story-inner">${s.emoji}</div>
+        <div class="story-inner">
+          <img src="${s.emoji}" alt="${s.name}" class="station-img" style="border-radius:50%;">
+        </div>
         ${i<3?'<div class="live-badge">Live</div>':''}
       </div>
       <span class="story-name">${s.name.split(' ')[0]}</span>`;
@@ -1074,7 +1099,9 @@ function buildGrid() {
     el.className = 'station-card' + (idx===currentIdx?' active-card':'');
     el.id = `card-${s.id}`;
     el.innerHTML = `
-      <div class="card-thumb" style="background:${s.grad}">${s.emoji}</div>
+      <div class="card-thumb" style="background:${s.grad}">
+        <img src="${s.emoji}" alt="${s.name}" class="station-img">
+      </div>
       <div class="card-body">
         <div class="card-name">${s.name}</div>
         <div class="card-meta">
@@ -1103,7 +1130,9 @@ function buildHorizTrack(id, list) {
     const el = document.createElement('div');
     el.className = 'horiz-card';
     el.innerHTML = `
-      <div class="horiz-thumb" style="background:${s.grad}">${s.emoji}</div>
+      <div class="horiz-thumb" style="background:${s.grad}">
+        <img src="${s.emoji}" alt="${s.name}" class="station-img">
+      </div>
       <div class="horiz-body">
         <div class="horiz-name">${s.name}</div>
         <div class="horiz-meta">${s.listeners} oyentes</div>
@@ -1136,20 +1165,23 @@ function selectStation(idx) {
 
 function updateUI(s) {
   // player bar
-  document.getElementById('playerArt').textContent = s.emoji;
+  document.getElementById('playerArt').innerHTML = `<img src="${s.emoji}" alt="${s.name}" class="station-img" style="border-radius:12px;">`;
   document.getElementById('playerStation').textContent = s.name;
   document.getElementById('playerTrack').textContent = '🎵 ' + s.track;
+  
   // featured
-  document.getElementById('featuredBg').textContent = s.emoji;
+  document.getElementById('featuredBg').innerHTML = `<img src="${s.emoji}" alt="${s.name}" class="station-img" style="opacity:0.7;">`;
   document.getElementById('featuredBg').style.background = s.grad;
   document.getElementById('featuredTitle').textContent = s.name;
   document.getElementById('featuredSub').textContent = '🎵 ' + s.track;
+  
   // modal
-  document.getElementById('modalArt').textContent = s.emoji;
+  document.getElementById('modalArt').innerHTML = `<img src="${s.emoji}" alt="${s.name}" class="station-img" style="border-radius:50%;">`;
   document.getElementById('modalArt').style.background = s.grad;
   document.getElementById('modalStation').textContent = s.name;
   document.getElementById('modalTrack').textContent = s.track;
   document.getElementById('modalFreq').textContent = s.freq;
+  
   // rebuild grid
   buildGrid();
 }
@@ -1197,7 +1229,6 @@ function closeModal() {
   document.getElementById('playerModal').classList.remove('open');
 }
 
-// swipe down to close
 let startY = 0;
 document.getElementById('playerModal').addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
 document.getElementById('playerModal').addEventListener('touchend', e => {
@@ -1223,7 +1254,9 @@ function filterByGenre(genre) {
     const el = document.createElement('div');
     el.className = 'station-card' + (idx===currentIdx?' active-card':'');
     el.innerHTML = `
-      <div class="card-thumb" style="background:${s.grad}">${s.emoji}</div>
+      <div class="card-thumb" style="background:${s.grad}">
+        <img src="${s.emoji}" alt="${s.name}" class="station-img">
+      </div>
       <div class="card-body">
         <div class="card-name">${s.name}</div>
         <div class="card-meta"><div class="listeners-badge">${s.listeners} oyentes</div></div>
