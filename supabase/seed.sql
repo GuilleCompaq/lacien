@@ -26,7 +26,7 @@ values
   ('La Gamba', 'deportiva', 'Frecuencia pendiente', 0, 'PENDIENTE', '/radios/gamba-cordoba.webp', true, null),
   ('La 2x4', 'tango', '92.7 FM', 0, 'PENDIENTE', '/radios/la-2x4.webp', true, null),
   ('La Red', 'deportiva', 'AM 910', 0, 'PENDIENTE', '/radios/la-red.webp', true, null),
-  ('La 100', 'pop', '99.9 FM', 0, 'PENDIENTE', '/radios/la-100.webp', true, null),
+  ('La 100', 'pop', '99.9 FM', 0, 'https://26573.live.streamtheworld.com/FM999_56.mp3', '/radios/la-100.webp', true, null),
   ('Radio Latina', 'pop', 'Frecuencia pendiente', 0, 'PENDIENTE', '/radios/latina.webp', true, null),
   ('Los 40 Principales', 'pop', '105.5 FM', 0, 'PENDIENTE', '/radios/los-40-principales.webp', true, null),
   ('Mega', 'general', '98.3 FM', 0, 'PENDIENTE', '/radios/mega-98-3.png', true, null),
