@@ -11,10 +11,12 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
 *.env
 *.env/*
 *.env.local
 *.env.example
+graphify-out/
 
 # Editor directories and files
 .vscode/*
