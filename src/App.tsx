@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router';
+import { Analytics } from '@vercel/analytics/react';
 import { Header } from './components/layout/Header';
 import { BottomNav } from './components/layout/BottomNav';
 import { MiniPlayer } from './components/layout/MiniPlayer';
@@ -28,6 +29,7 @@ export default function App() {
       </main>
       <MiniPlayer />
       <BottomNav />
+      <Analytics />
     </>
   );
 }
