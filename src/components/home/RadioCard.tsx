@@ -1,5 +1,8 @@
 import { usePlayerStore } from '../../store/playerStore';
+import { describeStreamIssue, getStreamIssue } from '../../lib/streamSupport';
 import type { Radio } from '../../types/radio';
+import { HeartIcon } from '../icons';
+import { NoSignalChip, PlayButton } from '../player/PlayButton';
 import { RadioCover } from './RadioCover';
 
 interface RadioCardProps {
@@ -10,31 +13,33 @@ interface RadioCardProps {
 
 export function RadioCard({ radio, isFavorite, onToggleFavorite }: RadioCardProps) {
   const currentRadio = usePlayerStore((s) => s.currentRadio);
-  const isPlaying = usePlayerStore((s) => s.isPlaying);
-  const play = usePlayerStore((s) => s.play);
-  const togglePlay = usePlayerStore((s) => s.togglePlay);
+  const status = usePlayerStore((s) => s.status);
 
-  const isThisPlaying = currentRadio?.id === radio.id && isPlaying;
-
-  function handlePlayClick() {
-    if (currentRadio?.id === radio.id) {
-      togglePlay();
-    } else {
-      play(radio);
-    }
-  }
+  const issue = getStreamIssue(radio.streamUrl);
+  const isCurrent = currentRadio?.id === radio.id;
+  const isSounding = isCurrent && (status === 'playing' || status === 'connecting');
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-bg-surface p-3">
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-bg-surfaceAlt text-2xl">
+    <div
+      className={`flex items-center gap-3 rounded-2xl border bg-bg-surface p-3 transition-colors ${
+        isSounding ? 'border-accent/40' : 'border-white/5'
+      }`}
+    >
+      <div
+        className={`flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-bg-surfaceAlt text-2xl ${
+          issue ? 'opacity-40 grayscale' : ''
+        }`}
+      >
         <RadioCover radio={radio} />
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate font-semibold text-text-primary">{radio.name}</p>
+        <p className={`truncate font-semibold ${issue ? 'text-text-secondary' : 'text-text-primary'}`}>
+          {radio.name}
+        </p>
         <p className="truncate text-xs text-text-muted">
-          {radio.listeners.toLocaleString('es-AR')} oyentes ·{' '}
-          <span className="text-accent">{radio.frequency}</span>
+          {radio.listeners > 0 && `${radio.listeners.toLocaleString('es-AR')} oyentes · `}
+          <span className="text-text-secondary">{radio.frequency}</span>
         </p>
       </div>
 
@@ -42,22 +47,17 @@ export function RadioCard({ radio, isFavorite, onToggleFavorite }: RadioCardProp
         <button
           type="button"
           onClick={onToggleFavorite}
-          aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+          aria-label={isFavorite ? `Quitar ${radio.name} de favoritos` : `Agregar ${radio.name} a favoritos`}
           aria-pressed={isFavorite}
-          className={`shrink-0 text-lg ${isFavorite ? 'text-accent' : 'text-text-muted'}`}
+          className={`shrink-0 rounded-full p-2.5 -m-1 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+            isFavorite ? 'text-accent' : 'text-text-muted hover:text-text-secondary'
+          }`}
         >
-          {isFavorite ? '♥' : '♡'}
+          <HeartIcon filled={isFavorite} />
         </button>
       )}
 
-      <button
-        type="button"
-        onClick={handlePlayClick}
-        aria-label={isThisPlaying ? 'Pausar' : 'Reproducir'}
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-white hover:bg-accent-hover active:bg-accent-active"
-      >
-        {isThisPlaying ? '⏸' : '▶'}
-      </button>
+      {issue ? <NoSignalChip reason={describeStreamIssue(issue)} /> : <PlayButton radio={radio} />}
     </div>
   );
 }

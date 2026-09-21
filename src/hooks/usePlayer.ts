@@ -1,24 +1,70 @@
 import { useEffect, useRef } from 'react';
 import { usePlayerStore } from '../store/playerStore';
+import { describeStreamIssue, getStreamIssue } from '../lib/streamSupport';
 
 /**
  * Envuelve un único <audio> nativo (persistente entre renders del MiniPlayer)
  * y lo sincroniza con playerStore. El MiniPlayer se monta una sola vez en
  * App.tsx, por lo que este audio sobrevive a la navegación entre rutas.
+ *
+ * El elemento es la fuente de verdad del estado: la UI refleja lo que el audio
+ * reporta (`waiting`, `playing`, `error`), no lo que la app supone.
  */
 export function usePlayer() {
-  const { currentRadio, isPlaying, togglePlay, stop } = usePlayerStore();
+  const currentRadio = usePlayerStore((s) => s.currentRadio);
+  const status = usePlayerStore((s) => s.status);
+  const errorMessage = usePlayerStore((s) => s.errorMessage);
+  const togglePlay = usePlayerStore((s) => s.togglePlay);
+  const stop = usePlayerStore((s) => s.stop);
+  const retry = usePlayerStore((s) => s.retry);
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const audio = new Audio();
+    audio.preload = 'none';
     audioRef.current = audio;
+
+    const { setStatus, fail } = usePlayerStore.getState();
+
+    const onWaiting = () => {
+      // Solo degradar a "conectando" si creíamos estar sonando.
+      if (usePlayerStore.getState().status === 'playing') setStatus('connecting');
+    };
+    const onPlaying = () => setStatus('playing');
+    const onPause = () => {
+      const current = usePlayerStore.getState().status;
+      if (current === 'playing' || current === 'connecting') setStatus('paused');
+    };
+    const onError = () => {
+      switch (audio.error?.code) {
+        case 2: // MEDIA_ERR_NETWORK
+          return fail('Se cortó la conexión con la señal. Probá de nuevo.');
+        case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
+          return fail('Esta emisora no está transmitiendo en un formato que el navegador pueda reproducir.');
+        default:
+          return fail('No pudimos conectar con la señal.');
+      }
+    };
+
+    audio.addEventListener('waiting', onWaiting);
+    audio.addEventListener('stalled', onWaiting);
+    audio.addEventListener('playing', onPlaying);
+    audio.addEventListener('pause', onPause);
+    audio.addEventListener('error', onError);
+
     return () => {
+      audio.removeEventListener('waiting', onWaiting);
+      audio.removeEventListener('stalled', onWaiting);
+      audio.removeEventListener('playing', onPlaying);
+      audio.removeEventListener('pause', onPause);
+      audio.removeEventListener('error', onError);
       audio.pause();
       audioRef.current = null;
     };
   }, []);
 
+  // Cargar la señal de la emisora activa.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -26,26 +72,49 @@ export function usePlayer() {
     if (!currentRadio) {
       audio.pause();
       audio.removeAttribute('src');
+      audio.load();
       return;
     }
-    if (audio.src !== currentRadio.streamUrl) {
-      audio.src = currentRadio.streamUrl;
+
+    const issue = getStreamIssue(currentRadio.streamUrl);
+    if (issue) {
+      // No intentamos reproducir algo que ya sabemos que va a fallar.
+      audio.pause();
+      audio.removeAttribute('src');
+      usePlayerStore.getState().fail(describeStreamIssue(issue));
+      return;
+    }
+
+    const next = currentRadio.streamUrl.trim();
+    if (audio.getAttribute('src') !== next) {
+      audio.src = next;
     }
   }, [currentRadio]);
 
+  // Sincronizar la intención (status) con el elemento.
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentRadio) return;
+    if (!audio.getAttribute('src')) return;
 
-    if (isPlaying) {
-      audio.play().catch(() => {
-        // autoplay bloqueado por el navegador o error de red al conectar al stream
-        usePlayerStore.setState({ isPlaying: false });
+    if (status === 'connecting') {
+      audio.play().catch((error: unknown) => {
+        const name = error instanceof Error ? error.name : '';
+        // Un `error` del elemento ya habrá disparado su propio mensaje.
+        if (usePlayerStore.getState().status !== 'error') {
+          usePlayerStore
+            .getState()
+            .fail(
+              name === 'NotAllowedError'
+                ? 'El navegador bloqueó la reproducción. Tocá reproducir otra vez.'
+                : 'No pudimos conectar con la señal.',
+            );
+        }
       });
-    } else {
+    } else if (status === 'paused' || status === 'idle' || status === 'error') {
       audio.pause();
     }
-  }, [isPlaying, currentRadio]);
+  }, [status, currentRadio]);
 
-  return { currentRadio, isPlaying, togglePlay, stop };
+  return { currentRadio, status, errorMessage, togglePlay, stop, retry };
 }

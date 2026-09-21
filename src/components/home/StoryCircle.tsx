@@ -11,7 +11,8 @@ export function StoryCircle({ radio, onSelect }: StoryCircleProps) {
     <button
       type="button"
       onClick={() => onSelect(radio)}
-      className="flex w-16 shrink-0 flex-col items-center gap-1"
+      aria-label={`Escuchar ${radio.name}, ${radio.frequency}`}
+      className="flex w-16 shrink-0 flex-col items-center gap-1 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
       <div
         className={`relative flex h-16 w-16 items-center justify-center rounded-full text-2xl ${
@@ -22,8 +23,8 @@ export function StoryCircle({ radio, onSelect }: StoryCircleProps) {
           <RadioCover radio={radio} />
         </div>
         {radio.isLive && (
-          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-state-live px-1.5 py-0.5 text-[9px] font-bold leading-none text-white">
-            LIVE
+          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-state-live px-1 py-0.5 text-[11px] font-bold leading-none text-bg-base">
+            EN VIVO
           </span>
         )}
       </div>

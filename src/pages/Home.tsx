@@ -6,6 +6,7 @@ import { RadioGrid } from '../components/home/RadioGrid';
 import { StoriesBar } from '../components/home/StoriesBar';
 import { useFavorites } from '../hooks/useFavorites';
 import { useRadios } from '../hooks/useRadios';
+import { isStreamPlayable } from '../lib/streamSupport';
 
 export default function Home() {
   const { radios, loading, error } = useRadios();
@@ -14,7 +15,12 @@ export default function Home() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const liveRadios = useMemo(() => radios.filter((r) => r.isLive), [radios]);
+  // Destacados y el carrusel solo muestran señales que realmente pueden sonar:
+  // son los dos lugares donde la app invita a reproducir sin que el usuario elija.
+  const liveRadios = useMemo(
+    () => radios.filter((r) => r.isLive && isStreamPlayable(r.streamUrl)),
+    [radios],
+  );
   const featured = liveRadios[0];
   const filtered = useMemo(
     () => (genre === 'todo' ? radios : radios.filter((r) => r.genre === genre)),

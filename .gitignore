@@ -17,6 +17,13 @@ dist-ssr
 *.env.local
 *.env.example
 graphify-out/
+# Documentos de trabajo (auditoría, plan y registros de cada fix)
+task.md
+Plans.md
+plans.md
+fixs/
+fixs/*
+.impeccable/
 
 # Editor directories and files
 .vscode/*
