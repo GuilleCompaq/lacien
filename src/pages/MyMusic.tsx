@@ -91,6 +91,7 @@ export default function MyMusic() {
     <div className="py-4">
       <RadioGrid
         title="Mis favoritas"
+        headingLevel={1}
         radios={favorites}
         emptyMessage="Todavía no guardaste ninguna radio. Tocá el corazón en cualquier emisora."
         isFavorite={isFavorite}

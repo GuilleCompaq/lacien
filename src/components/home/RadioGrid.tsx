@@ -8,20 +8,30 @@ interface RadioGridProps {
   isFavorite?: (radioId: string) => boolean;
   /** Recibe la emisora entera: el muro de autenticación necesita tapa y nombre. */
   onToggleFavorite?: (radio: Radio) => void;
+  /** La página que lo usa decide si su título es el encabezado principal. */
+  headingLevel?: 1 | 2;
 }
 
-export function RadioGrid({ title, radios, emptyMessage, isFavorite, onToggleFavorite }: RadioGridProps) {
+export function RadioGrid({
+  title,
+  radios,
+  emptyMessage,
+  isFavorite,
+  onToggleFavorite,
+  headingLevel = 2,
+}: RadioGridProps) {
+  const Heading = headingLevel === 1 ? 'h1' : 'h2';
   return (
     <section className="flex flex-col gap-3 px-4">
       {title && (
-        <h2 className="text-lg font-bold text-text-primary">
+        <Heading className="text-lg font-bold text-text-primary">
           {title}
           {radios.length > 0 && (
             <span className="ml-2 text-sm font-medium tabular-nums text-text-muted">
               {radios.length}
             </span>
           )}
-        </h2>
+        </Heading>
       )}
 
       {radios.length === 0 ? (

@@ -39,6 +39,7 @@ export default function Search() {
 
   return (
     <div className="flex flex-col gap-4 py-4">
+      <h1 className="sr-only">Buscar radios</h1>
       <div className="px-4">
         <input
           type="search"

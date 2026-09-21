@@ -1,10 +1,16 @@
 import { NavLink } from 'react-router';
+import { HeartIcon, HomeIcon, SearchIcon, UserIcon } from '../icons';
 
+/**
+ * Iconos dibujados, no emoji. Además del problema de forma y peso por plataforma,
+ * los emoji no se pueden teñir: el estado activo es de color, así que con glifos
+ * el icono nunca cambiaba al seleccionar la pestaña — solo la etiqueta.
+ */
 const items = [
-  { to: '/', label: 'Inicio', icon: '🏠' },
-  { to: '/buscar', label: 'Buscar', icon: '🔍' },
-  { to: '/mi-musica', label: 'Mi Música', icon: '❤️' },
-  { to: '/perfil', label: 'Perfil', icon: '👤' },
+  { to: '/', label: 'Inicio', Icon: HomeIcon },
+  { to: '/buscar', label: 'Buscar', Icon: SearchIcon },
+  { to: '/mi-musica', label: 'Mis favoritas', Icon: HeartIcon },
+  { to: '/perfil', label: 'Perfil', Icon: UserIcon },
 ];
 
 export function BottomNav() {
@@ -17,22 +23,22 @@ export function BottomNav() {
       style={{ paddingBottom: 'var(--safe-bottom)' }}
       aria-label="Navegación principal"
     >
-      {items.map((item) => (
+      {items.map(({ to, label, Icon }) => (
         <NavLink
-          key={item.to}
-          to={item.to}
-          end={item.to === '/'}
+          key={to}
+          to={to}
+          end={to === '/'}
           className={({ isActive }) =>
-            `flex flex-1 flex-col items-center justify-center gap-0.5 text-xs transition-colors focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-accent ${
+            // El peso de la etiqueta acompaña al color: la señal de activo no
+            // depende solo del matiz.
+            `flex flex-1 flex-col items-center justify-center gap-1 text-xs transition-colors focus-visible:outline focus-visible:-outline-offset-2 focus-visible:outline-2 focus-visible:outline-accent ${
               isActive ? 'font-semibold text-accent' : 'text-text-muted hover:text-text-secondary'
             }`
           }
           style={{ height: 'var(--nav-h)' }}
         >
-          <span className="text-lg leading-none" aria-hidden="true">
-            {item.icon}
-          </span>
-          {item.label}
+          <Icon className="h-5 w-5" />
+          {label}
         </NavLink>
       ))}
     </nav>

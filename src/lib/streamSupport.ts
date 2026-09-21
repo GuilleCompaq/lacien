@@ -80,6 +80,20 @@ export function needsHlsShim(streamUrl: string): boolean {
   return isHlsUrl(streamUrl) && !browserPlaysHlsNatively() && browserCanPlayHlsViaMse();
 }
 
+/** Etiqueta breve para mostrar junto al dial: en táctil no hay tooltip que leer. */
+export function shortStreamIssue(issue: StreamIssue): string {
+  switch (issue) {
+    case 'missing':
+      return 'Señal no cargada';
+    case 'insecure':
+      return 'Señal no segura';
+    case 'playlist':
+      return 'Enlace no compatible';
+    case 'unsupported-format':
+      return 'Formato no soportado';
+  }
+}
+
 /** Nombra el problema y, cuando existe, la salida. */
 export function describeStreamIssue(issue: StreamIssue): string {
   switch (issue) {

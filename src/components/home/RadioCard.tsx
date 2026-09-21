@@ -1,5 +1,5 @@
 import { usePlayerStore } from '../../store/playerStore';
-import { describeStreamIssue, getStreamIssue } from '../../lib/streamSupport';
+import { describeStreamIssue, getStreamIssue, shortStreamIssue } from '../../lib/streamSupport';
 import type { Radio } from '../../types/radio';
 import { HeartIcon } from '../icons';
 import { NoSignalChip, PlayButton } from '../player/PlayButton';
@@ -43,12 +43,15 @@ export function RadioCard({ radio, isFavorite, onToggleFavorite }: RadioCardProp
             Va solo: el género dejó de ser eje de filtrado y `general` cubría 26 de 43,
             así que imprimirlo en cada fila era ruido que empujaba al dial contra el
             borde. Sigue en el modelo y se puede buscar por él. */}
-        <p
-          className={`truncate text-sm font-medium tabular-nums ${
-            issue ? 'text-text-muted' : 'text-text-primary'
-          }`}
-        >
-          {radio.frequency}
+        <p className="truncate text-sm">
+          <span
+            className={`font-medium tabular-nums ${issue ? 'text-text-muted' : 'text-text-primary'}`}
+          >
+            {radio.frequency}
+          </span>
+          {/* El motivo vivía solo en un `title`, que en táctil no existe: quien usa
+              el teléfono veía un círculo gris sin explicación. */}
+          {issue && <span className="text-text-muted"> · {shortStreamIssue(issue)}</span>}
         </p>
       </div>
 

@@ -63,6 +63,42 @@ export function AlertIcon({ className = 'h-4 w-4' }: IconProps) {
   );
 }
 
+export function HomeIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M3.75 10.5 12 4l8.25 6.5V19a1.25 1.25 0 0 1-1.25 1.25h-14A1.25 1.25 0 0 1 3.75 19v-8.5Z" />
+      <path d="M9.5 20.25v-6h5v6" />
+    </svg>
+  );
+}
+
+export function SearchIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <circle cx="10.75" cy="10.75" r="6.25" />
+      <path d="m15.5 15.5 4 4" />
+    </svg>
+  );
+}
+
 export function CloseIcon({ className = 'h-5 w-5' }: IconProps) {
   return (
     <svg

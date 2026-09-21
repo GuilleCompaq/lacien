@@ -44,6 +44,7 @@ export default function Home() {
       <FilterPills value={band} onChange={setBand} />
       <RadioGrid
         title={bandTitle(band)}
+        headingLevel={1}
         radios={filtered}
         isFavorite={isFavorite}
         onToggleFavorite={requestToggleFavorite}

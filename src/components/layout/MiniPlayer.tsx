@@ -47,7 +47,7 @@ export function MiniPlayer() {
         aria-label={`Cerrar el reproductor y dejar de escuchar ${currentRadio.name}`}
         className="-m-1.5 shrink-0 rounded-full p-3 text-text-muted transition-colors hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
-        <CloseIcon className="h-4 w-4" />
+        <CloseIcon className="h-5 w-5" />
       </button>
     </div>
   );

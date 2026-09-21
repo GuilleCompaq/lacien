@@ -11,6 +11,7 @@ import Profile from './pages/Profile';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import ResetPassword from './pages/ResetPassword';
+import NotFound from './pages/NotFound';
 
 export default function App() {
   const hasCurrentRadio = usePlayerStore((s) => s.currentRadio !== null);
@@ -20,6 +21,7 @@ export default function App() {
       <div className="app-shell flex flex-1 flex-col md:border-x md:border-white/5">
         <Header />
         <main
+          id="contenido"
           className="flex-1"
           style={{
             // Derivado de las alturas reales de las barras, no de números sueltos.
@@ -36,6 +38,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/registro" element={<SignUp />} />
             <Route path="/recuperar" element={<ResetPassword />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
       </div>

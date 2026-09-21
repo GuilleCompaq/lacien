@@ -35,6 +35,7 @@ export default function SignUp() {
     <AuthForm
       title="Crear cuenta"
       submitLabel="Crear cuenta"
+      passwordAutoComplete="new-password"
       onSubmit={handleSignUp}
       onSuccess={() => navigate(from, { replace: true })}
       footer={
