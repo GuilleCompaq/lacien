@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
 import { RadioGrid } from '../components/home/RadioGrid';
-import { useFavorites } from '../hooks/useFavorites';
+import { useFavoriteGate } from '../hooks/useFavoriteGate';
+import { SaveFavoriteSheet } from '../components/auth/SaveFavoriteSheet';
 import { useRadios } from '../hooks/useRadios';
 import { genreLabel, type Radio } from '../types/radio';
 
@@ -21,11 +21,9 @@ function haystack(radio: Radio): string {
 
 export default function Search() {
   const { radios, loading, error } = useRadios();
-  const { isFavorite, toggleFavorite } = useFavorites();
+  const { isFavorite, requestToggleFavorite, gateRadio, closeGate } = useFavoriteGate();
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
-  const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     const timeout = setTimeout(() => setDebouncedQuery(normalize(query)), 300);
@@ -36,13 +34,6 @@ export default function Search() {
     if (!debouncedQuery) return radios;
     return radios.filter((radio) => haystack(radio).includes(debouncedQuery));
   }, [radios, debouncedQuery]);
-
-  async function handleToggleFavorite(radioId: string) {
-    const { error } = await toggleFavorite(radioId);
-    if (error === 'auth-required') {
-      navigate('/login', { state: { from: location.pathname } });
-    }
-  }
 
   return (
     <div className="flex flex-col gap-4 py-4">
@@ -76,10 +67,12 @@ export default function Search() {
             radios={results}
             emptyMessage={`No encontramos radios para "${query.trim()}".`}
             isFavorite={isFavorite}
-            onToggleFavorite={handleToggleFavorite}
+            onToggleFavorite={requestToggleFavorite}
           />
         </>
       )}
+
+      {gateRadio && <SaveFavoriteSheet radio={gateRadio} onClose={closeGate} />}
     </div>
   );
 }

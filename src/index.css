@@ -3,6 +3,19 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Las barras fijas y el relleno de <main> se derivan de acá. Antes eran
+       números mágicos sueltos (bottom-16, pb-36, pb-16) que no coincidían entre
+       sí: quedaba una franja de ~12px donde se veía pasar el contenido. */
+    --nav-h: 3.25rem;
+    --player-h: 3.75rem;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    /* Ancho del producto. Es una app de radio pensada para el teléfono; en
+       desktop se encuadra en vez de estirar una fila de 48px a 1800px. */
+    --shell-w: 28rem;
+    color-scheme: dark;
+  }
+
   html,
   body,
   #root {
@@ -26,5 +39,53 @@
   .scrollbar-none {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+}
+
+@layer utilities {
+  /* Un solo momento autorado: la hoja entra desde abajo con salida exponencial.
+     Bajo prefers-reduced-motion no se anima y aparece en su lugar final. */
+  @keyframes sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes backdrop-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-sheet-in {
+      animation: sheet-in 320ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .animate-backdrop-in {
+      animation: backdrop-in 200ms ease-out;
+    }
+  }
+}
+
+@layer components {
+  /* La columna del producto y las barras fijas comparten ancho. Sin esto, en
+     desktop las barras cruzaban la pantalla entera mientras el contenido
+     quedaba centrado. */
+  .app-shell {
+    width: 100%;
+    max-width: var(--shell-w);
+    margin-inline: auto;
+  }
+
+  .app-bar {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: var(--shell-w);
   }
 }

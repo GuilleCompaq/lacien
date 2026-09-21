@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { AuthForm } from '../components/auth/AuthForm';
 import { useAuth } from '../hooks/useAuth';
 
 export default function SignUp() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  // Volver a donde estaba: ahí está la emisora que quiso guardar.
+  const from = (location.state as { from?: string } | null)?.from ?? '/perfil';
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
 
   async function handleSignUp(email: string, password: string) {
@@ -33,7 +36,7 @@ export default function SignUp() {
       title="Crear cuenta"
       submitLabel="Crear cuenta"
       onSubmit={handleSignUp}
-      onSuccess={() => navigate('/perfil', { replace: true })}
+      onSuccess={() => navigate(from, { replace: true })}
       footer={
         <p className="text-center text-sm text-text-muted">
           ¿Ya tenés cuenta?{' '}

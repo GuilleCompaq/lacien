@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { Radio } from '../types/radio';
 
 /**
@@ -21,40 +22,50 @@ interface PlayerState {
   fail: (message: string) => void;
 }
 
-export const usePlayerStore = create<PlayerState>((set, get) => ({
-  currentRadio: null,
-  status: 'idle',
-  errorMessage: null,
-
-  play: (radio) => {
-    const isSame = get().currentRadio?.id === radio.id;
-    set({
-      currentRadio: radio,
-      // Volver a tocar play sobre la emisora que ya suena no la reinicia.
-      status: isSame && get().status === 'playing' ? 'playing' : 'connecting',
+export const usePlayerStore = create<PlayerState>()(
+  persist(
+    (set, get) => ({
+      currentRadio: null,
+      status: 'idle',
       errorMessage: null,
-    });
-  },
 
-  togglePlay: () => {
-    const { status } = get();
-    if (status === 'playing' || status === 'connecting') {
-      set({ status: 'paused' });
-    } else {
-      set({ status: 'connecting', errorMessage: null });
-    }
-  },
+      play: (radio) => {
+        const isSame = get().currentRadio?.id === radio.id;
+        set({
+          currentRadio: radio,
+          // Volver a tocar play sobre la emisora que ya suena no la reinicia.
+          status: isSame && get().status === 'playing' ? 'playing' : 'connecting',
+          errorMessage: null,
+        });
+      },
 
-  stop: () => set({ currentRadio: null, status: 'idle', errorMessage: null }),
+      togglePlay: () => {
+        const { status } = get();
+        if (status === 'playing' || status === 'connecting') {
+          set({ status: 'paused' });
+        } else {
+          set({ status: 'connecting', errorMessage: null });
+        }
+      },
 
-  retry: () => set({ status: 'connecting', errorMessage: null }),
+      stop: () => set({ currentRadio: null, status: 'idle', errorMessage: null }),
 
-  setStatus: (status) => set({ status, errorMessage: status === 'error' ? get().errorMessage : null }),
+      retry: () => set({ status: 'connecting', errorMessage: null }),
 
-  fail: (message) => set({ status: 'error', errorMessage: message }),
-}));
+      setStatus: (status) =>
+        set({ status, errorMessage: status === 'error' ? get().errorMessage : null }),
 
-/** `true` solo cuando esta emisora es la que está sonando o conectando. */
-export function isActiveRadio(currentId: string | undefined, radioId: string) {
-  return currentId === radioId;
-}
+      fail: (message) => set({ status: 'error', errorMessage: message }),
+    }),
+    {
+      name: 'lacienradios:player',
+      /**
+       * Solo la emisora. El estado de reproducción no se persiste a propósito:
+       * los navegadores bloquean el autoplay al cargar, así que restaurarlo
+       * mostraría "sonando" sobre silencio. Al volver, el mini player aparece
+       * con la emisora lista y el usuario decide reanudar.
+       */
+      partialize: (state) => ({ currentRadio: state.currentRadio }),
+    },
+  ),
+);

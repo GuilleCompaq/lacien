@@ -116,5 +116,53 @@ export function usePlayer() {
     }
   }, [status, currentRadio]);
 
+  // Controles del sistema: pantalla de bloqueo, centro de notificaciones, botones
+  // del auricular y del auto. Para una radio en el teléfono esa es la superficie
+  // de control real, porque el aparato termina en el bolsillo.
+  useEffect(() => {
+    if (!('mediaSession' in navigator)) return;
+    const session = navigator.mediaSession;
+
+    if (!currentRadio) {
+      session.metadata = null;
+      session.playbackState = 'none';
+      return;
+    }
+
+    session.metadata = new MediaMetadata({
+      title: currentRadio.name,
+      artist: currentRadio.currentTrack
+        ? `${currentRadio.currentTrack.artist} • ${currentRadio.currentTrack.title}`
+        : currentRadio.frequency,
+      album: 'LaCienRadios',
+      artwork: currentRadio.coverImage
+        ? [{ src: new URL(currentRadio.coverImage, globalThis.location.origin).href }]
+        : [],
+    });
+
+    const { togglePlay: toggle, stop: halt, retry: again } = usePlayerStore.getState();
+    session.setActionHandler('play', () => {
+      const current = usePlayerStore.getState().status;
+      if (current === 'error') again();
+      else if (current !== 'playing') toggle();
+    });
+    session.setActionHandler('pause', () => {
+      if (usePlayerStore.getState().status !== 'paused') toggle();
+    });
+    session.setActionHandler('stop', halt);
+
+    return () => {
+      session.setActionHandler('play', null);
+      session.setActionHandler('pause', null);
+      session.setActionHandler('stop', null);
+    };
+  }, [currentRadio]);
+
+  useEffect(() => {
+    if (!('mediaSession' in navigator)) return;
+    navigator.mediaSession.playbackState =
+      status === 'playing' ? 'playing' : status === 'idle' ? 'none' : 'paused';
+  }, [status]);
+
   return { currentRadio, status, errorMessage, togglePlay, stop, retry };
 }

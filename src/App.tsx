@@ -10,23 +10,35 @@ import MyMusic from './pages/MyMusic';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import ResetPassword from './pages/ResetPassword';
 
 export default function App() {
   const hasCurrentRadio = usePlayerStore((s) => s.currentRadio !== null);
 
   return (
     <>
-      <Header />
-      <main className={`flex-1 ${hasCurrentRadio ? 'pb-36' : 'pb-16'}`}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/buscar" element={<Search />} />
-          <Route path="/mi-musica" element={<MyMusic />} />
-          <Route path="/perfil" element={<Profile />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/registro" element={<SignUp />} />
-        </Routes>
-      </main>
+      <div className="app-shell flex flex-1 flex-col md:border-x md:border-white/5">
+        <Header />
+        <main
+          className="flex-1"
+          style={{
+            // Derivado de las alturas reales de las barras, no de números sueltos.
+            paddingBottom: hasCurrentRadio
+              ? 'calc(var(--nav-h) + var(--player-h) + var(--safe-bottom))'
+              : 'calc(var(--nav-h) + var(--safe-bottom))',
+          }}
+        >
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/buscar" element={<Search />} />
+            <Route path="/mi-musica" element={<MyMusic />} />
+            <Route path="/perfil" element={<Profile />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<SignUp />} />
+            <Route path="/recuperar" element={<ResetPassword />} />
+          </Routes>
+        </main>
+      </div>
       <MiniPlayer />
       <BottomNav />
       <Analytics />

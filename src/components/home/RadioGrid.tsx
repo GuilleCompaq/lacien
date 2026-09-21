@@ -6,7 +6,8 @@ interface RadioGridProps {
   radios: Radio[];
   emptyMessage?: string;
   isFavorite?: (radioId: string) => boolean;
-  onToggleFavorite?: (radioId: string) => void;
+  /** Recibe la emisora entera: el muro de autenticación necesita tapa y nombre. */
+  onToggleFavorite?: (radio: Radio) => void;
 }
 
 export function RadioGrid({ title, radios, emptyMessage, isFavorite, onToggleFavorite }: RadioGridProps) {
@@ -34,7 +35,7 @@ export function RadioGrid({ title, radios, emptyMessage, isFavorite, onToggleFav
               key={radio.id}
               radio={radio}
               isFavorite={isFavorite?.(radio.id)}
-              onToggleFavorite={onToggleFavorite ? () => onToggleFavorite(radio.id) : undefined}
+              onToggleFavorite={onToggleFavorite ? () => onToggleFavorite(radio) : undefined}
             />
           ))}
         </div>

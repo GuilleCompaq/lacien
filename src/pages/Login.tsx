@@ -15,12 +15,19 @@ export default function Login() {
       onSubmit={signIn}
       onSuccess={() => navigate(from, { replace: true })}
       footer={
-        <p className="text-center text-sm text-text-muted">
-          ¿No tenés cuenta?{' '}
-          <Link to="/registro" className="text-accent">
-            Registrate
-          </Link>
-        </p>
+        <>
+          <p className="text-center text-sm">
+            <Link to="/recuperar" className="text-accent">
+              ¿Olvidaste tu contraseña?
+            </Link>
+          </p>
+          <p className="text-center text-sm text-text-muted">
+            ¿No tenés cuenta?{' '}
+            <Link to="/registro" className="text-accent">
+              Registrate
+            </Link>
+          </p>
+        </>
       }
     />
   );

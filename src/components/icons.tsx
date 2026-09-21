@@ -63,6 +63,23 @@ export function AlertIcon({ className = 'h-4 w-4' }: IconProps) {
   );
 }
 
+export function CloseIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />
+    </svg>
+  );
+}
+
 export function ChevronRightIcon({ className = 'h-5 w-5' }: IconProps) {
   return (
     <svg

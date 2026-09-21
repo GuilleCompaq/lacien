@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 import { Link } from 'react-router';
 import { RadioGrid } from '../components/home/RadioGrid';
 import { useAuth } from '../hooks/useAuth';
-import { useFavorites } from '../hooks/useFavorites';
+import { useFavoriteGate } from '../hooks/useFavoriteGate';
 import { useRadios } from '../hooks/useRadios';
 
 export default function MyMusic() {
   const { user } = useAuth();
   const { radios, loading: radiosLoading } = useRadios();
-  const { favoriteIds, isFavorite, toggleFavorite, loading: favoritesLoading } = useFavorites();
+  const { favoriteIds, isFavorite, requestToggleFavorite, loading: favoritesLoading } = useFavoriteGate();
 
   const favorites = useMemo(
     () => radios.filter((radio) => favoriteIds.has(radio.id)),
@@ -52,7 +52,7 @@ export default function MyMusic() {
         radios={favorites}
         emptyMessage="Todavía no agregaste radios favoritas."
         isFavorite={isFavorite}
-        onToggleFavorite={toggleFavorite}
+        onToggleFavorite={requestToggleFavorite}
       />
     </div>
   );

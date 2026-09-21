@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from './useAuth';
+import { takePendingFavorite } from '../lib/pendingFavorite';
 
 /**
  * Favoritos persistidos en Supabase, ligados al usuario autenticado.
  * Sin sesión, favoriteIds queda vacío y toggleFavorite devuelve
- * { error: 'auth-required' } para que la UI redirija a login/registro.
+ * { error: 'auth-required' } para que `useFavoriteGate` abra la hoja de registro
+ * sobre la página, sin sacar al usuario de donde está.
  */
 export function useFavorites() {
   const { user } = useAuth();
@@ -30,7 +32,29 @@ export function useFavorites() {
       .eq('user_id', user.id)
       .then(({ data }) => {
         if (cancelled) return;
-        setFavoriteIds(new Set((data ?? []).map((row) => row.radio_id as string)));
+        const ids = new Set((data ?? []).map((row) => row.radio_id as string));
+
+        // Aplicar el favorito que el usuario quiso guardar antes de tener cuenta.
+        // `take` lee y borra, así que si hay varias instancias del hook montadas
+        // solo una se lo lleva y no se inserta dos veces.
+        const pending = takePendingFavorite();
+        if (pending && !ids.has(pending)) {
+          ids.add(pending);
+          void supabase
+            .from('favorites')
+            .insert({ user_id: user.id, radio_id: pending })
+            .then(({ error }) => {
+              if (error && !cancelled) {
+                setFavoriteIds((prev) => {
+                  const next = new Set(prev);
+                  next.delete(pending);
+                  return next;
+                });
+              }
+            });
+        }
+
+        setFavoriteIds(ids);
         setLoading(false);
       });
 

@@ -1,21 +1,18 @@
 import { useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
 import { FeaturedCard } from '../components/home/FeaturedCard';
 import { FilterPills, type BandFilter } from '../components/home/FilterPills';
 import { RadioGrid } from '../components/home/RadioGrid';
 import { StoriesBar } from '../components/home/StoriesBar';
-import { useFavorites } from '../hooks/useFavorites';
+import { useFavoriteGate } from '../hooks/useFavoriteGate';
+import { SaveFavoriteSheet } from '../components/auth/SaveFavoriteSheet';
 import { useRadios } from '../hooks/useRadios';
 import { bandFromFrequency } from '../types/radio';
 import { isStreamPlayable } from '../lib/streamSupport';
 
 export default function Home() {
   const { radios, loading, error } = useRadios();
-  const { isFavorite, toggleFavorite } = useFavorites();
+  const { isFavorite, requestToggleFavorite, gateRadio, closeGate } = useFavoriteGate();
   const [band, setBand] = useState<BandFilter>('todas');
-  const navigate = useNavigate();
-  const location = useLocation();
-
   // Destacados y el carrusel solo muestran señales que realmente pueden sonar:
   // son los dos lugares donde la app invita a reproducir sin que el usuario elija.
   const liveRadios = useMemo(
@@ -27,13 +24,6 @@ export default function Home() {
     () => (band === 'todas' ? radios : radios.filter((r) => bandFromFrequency(r.frequency) === band)),
     [radios, band],
   );
-
-  async function handleToggleFavorite(radioId: string) {
-    const { error } = await toggleFavorite(radioId);
-    if (error === 'auth-required') {
-      navigate('/login', { state: { from: location.pathname } });
-    }
-  }
 
   if (loading) {
     return <p className="px-4 py-8 text-center text-text-muted">Cargando radios…</p>;
@@ -52,8 +42,10 @@ export default function Home() {
         title={bandTitle(band)}
         radios={filtered}
         isFavorite={isFavorite}
-        onToggleFavorite={handleToggleFavorite}
+        onToggleFavorite={requestToggleFavorite}
       />
+
+      {gateRadio && <SaveFavoriteSheet radio={gateRadio} onClose={closeGate} />}
     </div>
   );
 }
