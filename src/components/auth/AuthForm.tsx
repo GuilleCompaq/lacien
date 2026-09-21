@@ -58,7 +58,11 @@ export function AuthForm({ title, submitLabel, onSubmit, onSuccess, footer }: Au
         />
       </label>
 
-      {error && <p className="text-sm text-state-live">{error}</p>}
+      {error && (
+        <p className="text-sm text-state-live" role="alert">
+          {error}
+        </p>
+      )}
 
       <button
         type="submit"

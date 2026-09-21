@@ -2,6 +2,7 @@ import { useEffect, useState, type PropsWithChildren } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 import { AuthContext } from './auth-context';
+import { translateAuthError } from '../lib/authErrors';
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [session, setSession] = useState<Session | null>(null);
@@ -27,12 +28,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   async function signUp(email: string, password: string) {
     const { data, error } = await supabase.auth.signUp({ email, password });
-    return { error: error?.message ?? null, needsEmailConfirmation: !error && !data.session };
+    return {
+      error: translateAuthError(error),
+      needsEmailConfirmation: !error && !data.session,
+    };
   }
 
   async function signIn(email: string, password: string) {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error: error?.message ?? null };
+    return { error: translateAuthError(error) };
   }
 
   async function signOut() {
@@ -43,13 +47,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${globalThis.location.origin}/recuperar`,
     });
-    return { error: error?.message ?? null };
+    return { error: translateAuthError(error) };
   }
 
   async function updatePassword(password: string) {
     const { error } = await supabase.auth.updateUser({ password });
     if (!error) setIsRecovering(false);
-    return { error: error?.message ?? null };
+    return { error: translateAuthError(error) };
   }
 
   return (

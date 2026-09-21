@@ -5,13 +5,15 @@ import { RadioGrid } from '../components/home/RadioGrid';
 import { StoriesBar } from '../components/home/StoriesBar';
 import { useFavoriteGate } from '../hooks/useFavoriteGate';
 import { SaveFavoriteSheet } from '../components/auth/SaveFavoriteSheet';
+import { Notice } from '../components/ui/Notice';
 import { useRadios } from '../hooks/useRadios';
 import { bandFromFrequency } from '../types/radio';
 import { isStreamPlayable } from '../lib/streamSupport';
 
 export default function Home() {
   const { radios, loading, error } = useRadios();
-  const { isFavorite, requestToggleFavorite, gateRadio, closeGate } = useFavoriteGate();
+  const { isFavorite, requestToggleFavorite, gateRadio, closeGate, notice, dismissNotice } =
+    useFavoriteGate(radios);
   const [band, setBand] = useState<BandFilter>('todas');
   // Destacados y el carrusel solo muestran señales que realmente pueden sonar:
   // son los dos lugares donde la app invita a reproducir sin que el usuario elija.
@@ -30,7 +32,9 @@ export default function Home() {
   }
 
   if (error) {
-    return <p className="px-4 py-8 text-center text-state-live">No se pudieron cargar las radios: {error}</p>;
+    return <p className="px-4 py-8 text-center text-state-live" role="alert">
+        {error}
+      </p>;
   }
 
   return (
@@ -45,6 +49,7 @@ export default function Home() {
         onToggleFavorite={requestToggleFavorite}
       />
 
+      {notice && <Notice {...notice} onDismiss={dismissNotice} />}
       {gateRadio && <SaveFavoriteSheet radio={gateRadio} onClose={closeGate} />}
     </div>
   );

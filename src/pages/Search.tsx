@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { RadioGrid } from '../components/home/RadioGrid';
 import { useFavoriteGate } from '../hooks/useFavoriteGate';
 import { SaveFavoriteSheet } from '../components/auth/SaveFavoriteSheet';
+import { Notice } from '../components/ui/Notice';
 import { useRadios } from '../hooks/useRadios';
 import { genreLabel, type Radio } from '../types/radio';
 
@@ -21,7 +22,8 @@ function haystack(radio: Radio): string {
 
 export default function Search() {
   const { radios, loading, error } = useRadios();
-  const { isFavorite, requestToggleFavorite, gateRadio, closeGate } = useFavoriteGate();
+  const { isFavorite, requestToggleFavorite, gateRadio, closeGate, notice, dismissNotice } =
+    useFavoriteGate(radios);
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
@@ -72,6 +74,7 @@ export default function Search() {
         </>
       )}
 
+      {notice && <Notice {...notice} onDismiss={dismissNotice} />}
       {gateRadio && <SaveFavoriteSheet radio={gateRadio} onClose={closeGate} />}
     </div>
   );

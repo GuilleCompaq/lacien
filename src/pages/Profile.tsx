@@ -4,8 +4,14 @@ import { useFavorites } from '../hooks/useFavorites';
 import { ChevronRightIcon, UserIcon } from '../components/icons';
 
 export default function Profile() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading: authLoading } = useAuth();
   const { favoriteIds, loading } = useFavorites();
+
+  // Igual que en Mi Música: sin esperar a que resuelva la sesión, quien ya tiene
+  // cuenta ve el muro de registro en cada recarga.
+  if (authLoading) {
+    return <p className="px-4 py-8 text-center text-text-muted">Cargando tu cuenta…</p>;
+  }
 
   if (!user) {
     return (

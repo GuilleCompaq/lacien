@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { mapRadioRow, type Radio, type RadioRow } from '../types/radio';
+import { translateDataError } from '../lib/authErrors';
 
 export function useRadios() {
   const [radios, setRadios] = useState<Radio[]>([]);
@@ -17,7 +18,7 @@ export function useRadios() {
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) {
-          setError(error.message);
+          setError(translateDataError(error));
         } else {
           setRadios((data as RadioRow[]).map(mapRadioRow));
         }

@@ -15,23 +15,40 @@ export function useFavorites() {
   // Arranca en true: con false, la UI afirmaría "no tenés favoritas" durante el
   // primer render, antes de haber consultado. Un cero sin confirmar es una mentira.
   const [loading, setLoading] = useState(true);
+  /**
+   * Una consulta fallida no es una lista vacía. Sin este estado, un backend caído
+   * se renderizaba como "todavía no agregaste ninguna" — la misma mentira que el
+   * comentario de arriba dice evitar, servida por la ruta de error.
+   */
+  const [error, setError] = useState<string | null>(null);
+  /** Id del favorito pendiente que se acaba de aplicar, para poder confirmarlo. */
+  const [claimedId, setClaimedId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
       setFavoriteIds(new Set());
+      setError(null);
       setLoading(false);
       return;
     }
 
     let cancelled = false;
     setLoading(true);
+    setError(null);
 
     supabase
       .from('favorites')
       .select('radio_id')
       .eq('user_id', user.id)
-      .then(({ data }) => {
+      .then(({ data, error: fetchError }) => {
         if (cancelled) return;
+
+        if (fetchError) {
+          setError(fetchError.message);
+          setLoading(false);
+          return;
+        }
+
         const ids = new Set((data ?? []).map((row) => row.radio_id as string));
 
         // Aplicar el favorito que el usuario quiso guardar antes de tener cuenta.
@@ -43,13 +60,16 @@ export function useFavorites() {
           void supabase
             .from('favorites')
             .insert({ user_id: user.id, radio_id: pending })
-            .then(({ error }) => {
-              if (error && !cancelled) {
+            .then(({ error: insertError }) => {
+              if (cancelled) return;
+              if (insertError) {
                 setFavoriteIds((prev) => {
                   const next = new Set(prev);
                   next.delete(pending);
                   return next;
                 });
+              } else {
+                setClaimedId(pending);
               }
             });
         }
@@ -81,11 +101,11 @@ export function useFavorites() {
         return next;
       });
 
-      const { error } = wasFavorite
+      const { error: writeError } = wasFavorite
         ? await supabase.from('favorites').delete().eq('user_id', user.id).eq('radio_id', radioId)
         : await supabase.from('favorites').insert({ user_id: user.id, radio_id: radioId });
 
-      if (error) {
+      if (writeError) {
         // revertir la actualización optimista si Supabase rechazó el cambio
         setFavoriteIds((prev) => {
           const next = new Set(prev);
@@ -98,10 +118,12 @@ export function useFavorites() {
         });
       }
 
-      return { error: error?.message ?? null };
+      return { error: writeError?.message ?? null };
     },
     [favoriteIds, user],
   );
 
-  return { favoriteIds, isFavorite, toggleFavorite, loading };
+  const clearClaimed = useCallback(() => setClaimedId(null), []);
+
+  return { favoriteIds, isFavorite, toggleFavorite, loading, error, claimedId, clearClaimed };
 }
