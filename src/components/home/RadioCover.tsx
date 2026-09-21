@@ -12,7 +12,7 @@ export function RadioCover({ radio }: RadioCoverProps) {
         src={radio.coverImage}
         alt={radio.name}
         loading="lazy"
-        className="h-full w-full object-cover"
+        className="h-full w-full object-contain p-0.5"
       />
     );
   }

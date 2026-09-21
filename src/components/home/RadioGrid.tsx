@@ -12,7 +12,16 @@ interface RadioGridProps {
 export function RadioGrid({ title, radios, emptyMessage, isFavorite, onToggleFavorite }: RadioGridProps) {
   return (
     <section className="flex flex-col gap-3 px-4">
-      {title && <h2 className="text-lg font-bold text-text-primary">{title}</h2>}
+      {title && (
+        <h2 className="text-lg font-bold text-text-primary">
+          {title}
+          {radios.length > 0 && (
+            <span className="ml-2 text-sm font-medium tabular-nums text-text-muted">
+              {radios.length}
+            </span>
+          )}
+        </h2>
+      )}
 
       {radios.length === 0 ? (
         <p className="py-8 text-center text-sm text-text-muted">

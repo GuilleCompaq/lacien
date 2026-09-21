@@ -7,8 +7,8 @@ import { useRadios } from '../hooks/useRadios';
 
 export default function MyMusic() {
   const { user } = useAuth();
-  const { radios, loading } = useRadios();
-  const { favoriteIds, isFavorite, toggleFavorite } = useFavorites();
+  const { radios, loading: radiosLoading } = useRadios();
+  const { favoriteIds, isFavorite, toggleFavorite, loading: favoritesLoading } = useFavorites();
 
   const favorites = useMemo(
     () => radios.filter((radio) => favoriteIds.has(radio.id)),
@@ -31,15 +31,17 @@ export default function MyMusic() {
           >
             Iniciar sesión
           </Link>
-          <Link to="/registro" className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white">
-            Registrarme
+          <Link to="/registro" className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-bg-base">
+            Crear cuenta
           </Link>
         </div>
       </div>
     );
   }
 
-  if (loading) {
+  // Esperar ambas consultas: mostrar el estado vacío con los favoritos en vuelo
+  // afirmaría que no hay ninguna antes de saberlo.
+  if (radiosLoading || favoritesLoading) {
     return <p className="px-4 py-8 text-center text-text-muted">Cargando tus radios…</p>;
   }
 

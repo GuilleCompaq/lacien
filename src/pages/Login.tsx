@@ -11,7 +11,7 @@ export default function Login() {
   return (
     <AuthForm
       title="Iniciar sesión"
-      submitLabel="Entrar"
+      submitLabel="Iniciar sesión"
       onSubmit={signIn}
       onSuccess={() => navigate(from, { replace: true })}
       footer={

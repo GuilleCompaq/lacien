@@ -22,11 +22,6 @@ export function StoryCircle({ radio, onSelect }: StoryCircleProps) {
         <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-bg-surface">
           <RadioCover radio={radio} />
         </div>
-        {radio.isLive && (
-          <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 rounded-full bg-state-live px-1 py-0.5 text-[11px] font-bold leading-none text-bg-base">
-            EN VIVO
-          </span>
-        )}
       </div>
       <span className="w-full truncate text-center text-xs text-text-secondary">{radio.name}</span>
     </button>

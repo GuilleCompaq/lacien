@@ -10,11 +10,14 @@ import { useAuth } from './useAuth';
 export function useFavorites() {
   const { user } = useAuth();
   const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(false);
+  // Arranca en true: con false, la UI afirmaría "no tenés favoritas" durante el
+  // primer render, antes de haber consultado. Un cero sin confirmar es una mentira.
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
       setFavoriteIds(new Set());
+      setLoading(false);
       return;
     }
 

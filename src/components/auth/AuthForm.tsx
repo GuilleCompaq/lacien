@@ -63,7 +63,7 @@ export function AuthForm({ title, submitLabel, onSubmit, onSuccess, footer }: Au
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-xl bg-accent py-2.5 font-semibold text-white hover:bg-accent-hover active:bg-accent-active disabled:opacity-60"
+        className="rounded-xl bg-accent py-2.5 font-semibold text-bg-base hover:bg-accent-hover active:bg-accent-hover disabled:opacity-60"
       >
         {submitting ? 'Un momento…' : submitLabel}
       </button>

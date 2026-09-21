@@ -31,7 +31,7 @@ export default function SignUp() {
   return (
     <AuthForm
       title="Crear cuenta"
-      submitLabel="Registrarme"
+      submitLabel="Crear cuenta"
       onSubmit={handleSignUp}
       onSuccess={() => navigate('/perfil', { replace: true })}
       footer={
