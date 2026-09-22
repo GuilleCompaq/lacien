@@ -14,7 +14,12 @@ export function useRadios() {
     supabase
       .from('radios')
       .select('*')
+            // El orden por oyentes ya estaba, pero las 43 filas valen 0: sin desempate,
+      // lo que se ve es orden de inserción. Con el nombre como segundo criterio la
+      // lista es estable y escaneable hoy, y el día que haya oyentes reales manda
+      // la popularidad sin tocar nada.
       .order('listeners', { ascending: false })
+      .order('name', { ascending: true })
       .then(({ data, error }) => {
         if (cancelled) return;
         if (error) {

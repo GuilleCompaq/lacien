@@ -9,9 +9,14 @@ import type { Radio } from '../types/radio';
  */
 export type PlaybackStatus = 'idle' | 'connecting' | 'playing' | 'paused' | 'error';
 
+/** Un atajo a lo que escuchás siempre, no un historial completo. */
+const RECENT_LIMIT = 8;
+
 interface PlayerState {
   currentRadio: Radio | null;
   status: PlaybackStatus;
+  /** Ids escuchados, del más reciente al más viejo. Alimenta "Recientes". */
+  recentIds: string[];
   /** Mensaje de error listo para mostrar: nombra el problema y la salida. */
   errorMessage: string | null;
   play: (radio: Radio) => void;
@@ -28,6 +33,7 @@ export const usePlayerStore = create<PlayerState>()(
       currentRadio: null,
       status: 'idle',
       errorMessage: null,
+      recentIds: [],
 
       play: (radio) => {
         const isSame = get().currentRadio?.id === radio.id;
@@ -36,6 +42,9 @@ export const usePlayerStore = create<PlayerState>()(
           // Volver a tocar play sobre la emisora que ya suena no la reinicia.
           status: isSame && get().status === 'playing' ? 'playing' : 'connecting',
           errorMessage: null,
+          // Al frente y sin repetir. Se recorta para que el carrusel siga siendo
+          // un atajo y no vuelva a ser el catálogo entero.
+          recentIds: [radio.id, ...get().recentIds.filter((id) => id !== radio.id)].slice(0, RECENT_LIMIT),
         });
       },
 
@@ -65,7 +74,7 @@ export const usePlayerStore = create<PlayerState>()(
        * mostraría "sonando" sobre silencio. Al volver, el mini player aparece
        * con la emisora lista y el usuario decide reanudar.
        */
-      partialize: (state) => ({ currentRadio: state.currentRadio }),
+      partialize: (state) => ({ currentRadio: state.currentRadio, recentIds: state.recentIds }),
     },
   ),
 );

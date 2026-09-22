@@ -7,6 +7,7 @@ import { useFavoriteGate } from '../hooks/useFavoriteGate';
 import { SaveFavoriteSheet } from '../components/auth/SaveFavoriteSheet';
 import { Notice } from '../components/ui/Notice';
 import { useRadios } from '../hooks/useRadios';
+import { usePlayerStore } from '../store/playerStore';
 import { bandFromFrequency } from '../types/radio';
 import { isStreamPlayable } from '../lib/streamSupport';
 
@@ -15,13 +16,23 @@ export default function Home() {
   const { isFavorite, requestToggleFavorite, gateRadio, closeGate, notice, dismissNotice } =
     useFavoriteGate(radios);
   const [band, setBand] = useState<BandFilter>('todas');
-  // Destacados y el carrusel solo muestran señales que realmente pueden sonar:
-  // son los dos lugares donde la app invita a reproducir sin que el usuario elija.
-  const liveRadios = useMemo(
-    () => radios.filter((r) => r.isLive && isStreamPlayable(r.streamUrl)),
-    [radios],
-  );
-  const featured = liveRadios[0];
+  const recentIds = usePlayerStore((s) => s.recentIds);
+
+  /**
+   * El historial guarda ids; acá se resuelven contra el catálogo, conservando el
+   * orden de escucha y descartando lo que ya no puede sonar. La más reciente va
+   * al destacado y el resto al carrusel, así ninguna aparece dos veces arriba.
+   */
+  const recent = useMemo(() => {
+    const byId = new Map(radios.map((radio) => [radio.id, radio]));
+    return recentIds
+      .map((id) => byId.get(id))
+      .filter((radio): radio is NonNullable<typeof radio> => Boolean(radio))
+      .filter((radio) => isStreamPlayable(radio.streamUrl));
+  }, [radios, recentIds]);
+
+  const [featured, ...olderRecent] = recent;
+
   const filtered = useMemo(
     () => (band === 'todas' ? radios : radios.filter((r) => bandFromFrequency(r.frequency) === band)),
     [radios, band],
@@ -32,19 +43,26 @@ export default function Home() {
   }
 
   if (error) {
-    return <p className="px-4 py-8 text-center text-state-live" role="alert">
+    return (
+      <p className="px-4 py-8 text-center text-state-live" role="alert">
         {error}
-      </p>;
+      </p>
+    );
   }
 
   return (
     <div className="flex flex-col gap-4 py-4">
-      <StoriesBar radios={liveRadios} />
+      {/* Las secciones de arriba son h2, así que el encabezado de la página tiene
+          que precederlas en el DOM aunque no se dibuje. */}
+      <h1 className="sr-only">Radios</h1>
+
+      {/* Sin historial, Inicio arranca en los filtros y la lista: nada inventado
+          ocupando la primera pantalla. Las dos secciones aparecen con el uso. */}
       {featured && <FeaturedCard radio={featured} />}
+      <StoriesBar radios={olderRecent} />
       <FilterPills value={band} onChange={setBand} />
       <RadioGrid
         title={bandTitle(band)}
-        headingLevel={1}
         radios={filtered}
         isFavorite={isFavorite}
         onToggleFavorite={requestToggleFavorite}

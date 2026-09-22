@@ -21,11 +21,14 @@ export function FeaturedCard({ radio }: FeaturedCardProps) {
           del gradiente y caía a 1.5:1. El blur no tenía nada que difuminar salvo el
           gradiente que dibujamos acá mismo. El marco de marca es el borde de afuera. */}
       <div className="rounded-[1.35rem] bg-bg-base p-4">
+        {/* El slot dejó de ser `liveRadios[0]`, que era la fila cero de un orden
+            arbitrario y se repetía en el carrusel y en la lista. Ahora es la última
+            que escuchaste: una razón real para estar acá. */}
         <div className="mb-3 flex items-center gap-2">
-          <span className="rounded-full bg-state-live px-2 py-0.5 text-xs font-bold text-bg-base">
-            EN VIVO
+          <h2 className="text-sm font-semibold text-text-secondary">Seguir escuchando</h2>
+          <span className="text-sm font-medium tabular-nums text-text-muted">
+            {radio.frequency}
           </span>
-          <span className="text-xs text-text-secondary">{radio.frequency}</span>
         </div>
 
         <div className="flex items-center justify-between gap-3">
