@@ -23,7 +23,7 @@ values
   ('Radio del Plata', 'general', 'AM 1030', 0, 'https://streaming01.shockmedia.com.ar:10217/stream/1/', '/radios/del-plata.webp', true, null),
   ('Delta', 'general', '90.3 FM', 0, 'https://cdn.instream.audio/:9069/stream', '/radios/delta-capital-federal.webp', true, null),
   ('Radio El Mundo', 'general', 'AM 1070', 0, 'https://streaming.escuchanosonline.com:7118/stream/1/', '/radios/el-mundo.webp', true, null),
-  ('ESPN Radio Argentina', 'deportiva', '100.3 FM', 0, 'https://www.espn.com.ar/radio/play/_/s/deportes', '/radios/espn-radio-argentina.png', true, null),
+  ('ESPN Radio Argentina', 'deportiva', '107.9 FM', 0, 'https://www.espn.com.ar/radio/play/_/s/deportes', '/radios/espn-radio-argentina.png', true, null),
   ('FM Con Vos', 'general', '89.9 FM', 0, 'https://server1.stweb.tv/rcvos/live/playlist.m3u8', '/radios/fm-89-9.webp', true, null),
   ('FM Córdoba', 'general', '91.9 FM', 0, 'https://playerservices.streamtheworld.com/api/livestream-redirect/CADENAHEAT_SC', '/radios/fm-cordoba.webp', true, null),
   ('Fónica', 'general', '100.7 FM', 0, 'https://edge03.radiohdvivo.com/radiofonica', '/radios/fonica-rosario.webp', true, null),

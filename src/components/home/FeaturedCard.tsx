@@ -1,14 +1,17 @@
 import { usePlayerStore } from '../../store/playerStore';
 import { describeStreamIssue, getStreamIssue } from '../../lib/streamSupport';
 import type { Radio } from '../../types/radio';
+import { HeartIcon } from '../icons';
 import { NoSignalChip, PlayButton } from '../player/PlayButton';
 import { RadioCover } from './RadioCover';
 
 interface FeaturedCardProps {
   radio: Radio;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 }
 
-export function FeaturedCard({ radio }: FeaturedCardProps) {
+export function FeaturedCard({ radio, isFavorite, onToggleFavorite }: FeaturedCardProps) {
   const currentRadio = usePlayerStore((s) => s.currentRadio);
   const status = usePlayerStore((s) => s.status);
 
@@ -24,11 +27,37 @@ export function FeaturedCard({ radio }: FeaturedCardProps) {
         {/* El slot dejó de ser `liveRadios[0]`, que era la fila cero de un orden
             arbitrario y se repetía en el carrusel y en la lista. Ahora es la última
             que escuchaste: una razón real para estar acá. */}
+        {/* El favorito va en la fila del rótulo, que tenía espacio libre a la
+            derecha, en vez de apretarse contra el botón de reproducir: así el gesto
+            principal de la tarjeta conserva su aire. */}
         <div className="mb-3 flex items-center gap-2">
-          <h2 className="text-sm font-semibold text-text-secondary">Seguir escuchando</h2>
+          {/* "Seguir escuchando" es una invitación, y deja de tener sentido cuando la
+              emisora ya está sonando. Durante la conexión sigue siendo invitación: la
+              línea de estado de abajo es la que dice "Conectando…". */}
+          <h2 className="text-sm font-semibold text-text-secondary">
+            {isCurrent && status === 'playing' ? 'Sonando ahora' : 'Seguir escuchando'}
+          </h2>
           <span className="text-sm font-medium tabular-nums text-text-muted">
             {radio.frequency}
           </span>
+
+          {onToggleFavorite && (
+            <button
+              type="button"
+              onClick={onToggleFavorite}
+              aria-label={
+                isFavorite
+                  ? `Quitar ${radio.name} de favoritos`
+                  : `Agregar ${radio.name} a favoritos`
+              }
+              aria-pressed={isFavorite}
+              className={`-m-1.5 ml-auto shrink-0 rounded-full p-3 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+                isFavorite ? 'text-accent' : 'text-text-muted hover:text-text-secondary'
+              }`}
+            >
+              <HeartIcon filled={isFavorite} />
+            </button>
+          )}
         </div>
 
         <div className="flex items-center justify-between gap-3">

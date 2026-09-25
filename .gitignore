@@ -24,6 +24,9 @@ plans.md
 fixs/
 fixs/*
 .impeccable/
+.mcp.json
+# Capturas y logs que genera el servidor MCP de Playwright
+.playwright-mcp/
 
 # Editor directories and files
 .vscode/*

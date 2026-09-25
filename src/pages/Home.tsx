@@ -58,7 +58,13 @@ export default function Home() {
 
       {/* Sin historial, Inicio arranca en los filtros y la lista: nada inventado
           ocupando la primera pantalla. Las dos secciones aparecen con el uso. */}
-      {featured && <FeaturedCard radio={featured} />}
+      {featured && (
+        <FeaturedCard
+          radio={featured}
+          isFavorite={isFavorite(featured.id)}
+          onToggleFavorite={() => requestToggleFavorite(featured)}
+        />
+      )}
       <StoriesBar radios={olderRecent} />
       <FilterPills value={band} onChange={setBand} />
       <RadioGrid
