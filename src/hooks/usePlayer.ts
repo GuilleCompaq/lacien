@@ -22,7 +22,6 @@ export function usePlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   /** Instancia de hls.js viva, solo para señales .m3u8 fuera de Safari. */
   const hlsRef = useRef<Hls | null>(null);
-
   useEffect(() => {
     const audio = new Audio();
     audio.preload = 'none';

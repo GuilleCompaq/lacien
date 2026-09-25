@@ -26,10 +26,10 @@ export function FeaturedCard({ radio, isFavorite, onToggleFavorite }: FeaturedCa
       <div className="rounded-[1.35rem] bg-bg-base p-4">
         {/* El slot dejó de ser `liveRadios[0]`, que era la fila cero de un orden
             arbitrario y se repetía en el carrusel y en la lista. Ahora es la última
-            que escuchaste: una razón real para estar acá. */}
-        {/* El favorito va en la fila del rótulo, que tenía espacio libre a la
-            derecha, en vez de apretarse contra el botón de reproducir: así el gesto
-            principal de la tarjeta conserva su aire. */}
+            que escuchaste: una razón real para estar acá.
+            El favorito va en esta fila, que tenía espacio libre a la derecha, en vez
+            de apretarse contra el botón de reproducir: así el gesto principal de la
+            tarjeta conserva su aire. */}
         <div className="mb-3 flex items-center gap-2">
           {/* "Seguir escuchando" es una invitación, y deja de tener sentido cuando la
               emisora ya está sonando. Durante la conexión sigue siendo invitación: la
@@ -74,9 +74,7 @@ export function FeaturedCard({ radio, isFavorite, onToggleFavorite }: FeaturedCa
                     ? 'No pudimos conectar'
                     : radio.currentTrack
                       ? `${radio.currentTrack.artist} • ${radio.currentTrack.title}`
-                      : radio.listeners > 0
-                        ? `${radio.listeners.toLocaleString('es-AR')} oyentes`
-                        : 'Señal en directo'}
+                      : 'Señal en directo'}
               </p>
             </div>
           </div>

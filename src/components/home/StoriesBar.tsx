@@ -1,28 +1,30 @@
+import { useId } from 'react';
 import { usePlayerStore } from '../../store/playerStore';
 import type { Radio } from '../../types/radio';
 import { StoryCircle } from './StoryCircle';
 
 interface StoriesBarProps {
+  title: string;
   radios: Radio[];
 }
 
 /**
- * Atajo a lo que ya escuchaste.
+ * Carrusel de emisoras en formato story, con encabezado propio.
  *
- * Antes mostraba el catálogo entero: ~40 círculos idénticos en un solo punto de
- * decisión, ordenados por una columna que vale cero en todas las filas, así que
- * el orden no significaba nada. Ahora son las últimas escuchadas — dato real,
- * personal, que varía — y cuando no hay historial la sección no aparece.
+ * Lo usan dos secciones con sentidos distintos —"Las más escuchadas" y
+ * "Recientes"— y ninguna se dibuja vacía: sin contenido, la sección no aparece
+ * en lugar de dejar un título sobre la nada.
  */
-export function StoriesBar({ radios }: StoriesBarProps) {
+export function StoriesBar({ title, radios }: StoriesBarProps) {
   const play = usePlayerStore((s) => s.play);
+  const titleId = useId();
 
   if (radios.length === 0) return null;
 
   return (
-    <section aria-labelledby="recientes-titulo" className="flex flex-col gap-2">
-      <h2 id="recientes-titulo" className="px-4 text-sm font-semibold text-text-secondary">
-        Recientes
+    <section aria-labelledby={titleId} className="flex flex-col gap-2">
+      <h2 id={titleId} className="px-4 text-sm font-semibold text-text-secondary">
+        {title}
       </h2>
       <div className="scrollbar-none flex gap-3 overflow-x-auto px-4 pb-1">
         {radios.map((radio) => (

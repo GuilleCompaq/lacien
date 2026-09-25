@@ -33,6 +33,20 @@ export default function Home() {
 
   const [featured, ...olderRecent] = recent;
 
+  /**
+   * Top 10 por reproducciones. `useRadios` ya pide la lista ordenada por
+   * `listeners` descendente, así que acá solo se recorta.
+   *
+   * El filtro `listeners > 0` es lo que mantiene honesta la sección: mientras
+   * nadie haya reproducido nada, no hay ranking que mostrar y el carrusel no
+   * aparece, en vez de rotular como "más escuchadas" a diez emisoras en orden
+   * alfabético. Se llena solo a medida que la gente escucha.
+   */
+  const topRadios = useMemo(
+    () => radios.filter((r) => r.listeners > 0 && isStreamPlayable(r.streamUrl)).slice(0, 10),
+    [radios],
+  );
+
   const filtered = useMemo(
     () => (band === 'todas' ? radios : radios.filter((r) => bandFromFrequency(r.frequency) === band)),
     [radios, band],
@@ -58,6 +72,7 @@ export default function Home() {
 
       {/* Sin historial, Inicio arranca en los filtros y la lista: nada inventado
           ocupando la primera pantalla. Las dos secciones aparecen con el uso. */}
+      <StoriesBar title="Las más guardadas" radios={topRadios} />
       {featured && (
         <FeaturedCard
           radio={featured}
@@ -65,7 +80,7 @@ export default function Home() {
           onToggleFavorite={() => requestToggleFavorite(featured)}
         />
       )}
-      <StoriesBar radios={olderRecent} />
+      <StoriesBar title="Recientes" radios={olderRecent} />
       <FilterPills value={band} onChange={setBand} />
       <RadioGrid
         title={bandTitle(band)}
