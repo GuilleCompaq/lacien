@@ -18,7 +18,12 @@ Ver [docs/SPEC-LaCienRadios.md](docs/SPEC-LaCienRadios.md) (arquitectura y compo
 2. Crear un proyecto en [supabase.com](https://supabase.com), y en el **SQL Editor** ejecutar en orden:
 
    - [supabase/migrations/0001_init.sql](supabase/migrations/0001_init.sql) — crea las tablas `radios` y `favorites` con RLS.
-   - [supabase/seed.sql](supabase/seed.sql) — carga las 43 radios argentinas del catálogo (con su logo). **`stream_url` queda en `'PENDIENTE'` para todas**: hay que completarlo con la URL de streaming real de cada emisora (y revisar las que tienen `frequency = 'Frecuencia pendiente'`) directamente en la tabla `radios` de Supabase.
+   - [supabase/seed.sql](supabase/seed.sql) — carga las 43 radios argentinas del catálogo, con su logo y su frecuencia. Casi todas traen `stream_url` real; las que no, la app las muestra como "Sin señal" en vez de ofrecer un play que va a fallar.
+   - [supabase/migrations/0002_listeners_from_favorites.sql](supabase/migrations/0002_listeners_from_favorites.sql) — trigger que mantiene `radios.listeners` igual a la cantidad de usuarios que guardaron cada emisora.
+
+   Después hay que configurar auth (URLs de redirección, SMTP, plantillas en castellano): ver
+   **[docs/configuracion-supabase.md](docs/configuracion-supabase.md)**. Sin eso, los registros no
+   se pueden completar en producción.
 
 3. Copiar `.env.example` a `.env.local` y completar con la URL y anon key de tu proyecto (Project Settings → API):
 

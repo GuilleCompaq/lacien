@@ -3,7 +3,16 @@ import { useId, useState, type FormEvent, type ReactNode } from 'react';
 interface AuthFormProps {
   title: string;
   submitLabel: string;
-  onSubmit: (email: string, password: string) => Promise<{ error: string | null }>;
+  /**
+   * `handled: true` significa que la página ya se hizo cargo del resultado y no
+   * hay que avanzar. Sin esto, un registro que solo dejó el mail pendiente
+   * disparaba igual `onSuccess` y navegaba, dejando la pantalla de confirmación
+   * inalcanzable.
+   */
+  onSubmit: (
+    email: string,
+    password: string,
+  ) => Promise<{ error: string | null; handled?: boolean }>;
   onSuccess: () => void;
   footer: ReactNode;
   /**
@@ -41,6 +50,8 @@ export function AuthForm({
 
     if (result.error) {
       setError(result.error);
+      setSubmitting(false);
+    } else if (result.handled) {
       setSubmitting(false);
     } else {
       onSuccess();

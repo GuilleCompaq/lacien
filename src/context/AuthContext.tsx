@@ -26,12 +26,40 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function signUp(email: string, password: string) {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+  /**
+   * Adónde vuelve el usuario desde el enlace del mail.
+   *
+   * Sin `emailRedirectTo`, Supabase usa el Site URL del proyecto — que por defecto
+   * es `localhost:3000`, así que en producción la confirmación aterrizaba fuera de
+   * la app. Volver a la ruta de origen además hace que el favorito pendiente se
+   * aplique solo, siempre que se confirme en el mismo navegador.
+   *
+   * La URL tiene que estar en la lista blanca de redirecciones del proyecto; si no,
+   * Supabase la ignora en silencio y cae al Site URL igual.
+   */
+  function confirmationTarget(redirectPath: string) {
+    return `${globalThis.location.origin}${redirectPath}`;
+  }
+
+  async function signUp(email: string, password: string, redirectPath = '/') {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: confirmationTarget(redirectPath) },
+    });
     return {
       error: translateAuthError(error),
       needsEmailConfirmation: !error && !data.session,
     };
+  }
+
+  async function resendConfirmation(email: string, redirectPath = '/') {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: confirmationTarget(redirectPath) },
+    });
+    return { error: translateAuthError(error) };
   }
 
   async function signIn(email: string, password: string) {
@@ -63,6 +91,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
         session,
         loading,
         signUp,
+        resendConfirmation,
         signIn,
         signOut,
         requestPasswordReset,
