@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router';
 import { AuthForm } from '../components/auth/AuthForm';
 import { useAuth } from '../hooks/useAuth';
+import { AuthIntent } from '../components/auth/AuthIntent';
 
 export default function Login() {
   const { signIn } = useAuth();
@@ -12,6 +13,7 @@ export default function Login() {
     <AuthForm
       title="Iniciar sesión"
       submitLabel="Iniciar sesión"
+      intro={<AuthIntent />}
       onSubmit={signIn}
       onSuccess={() => navigate(from, { replace: true })}
       footer={

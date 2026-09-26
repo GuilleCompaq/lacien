@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { AuthForm } from '../components/auth/AuthForm';
 import { useAuth } from '../hooks/useAuth';
+import { AuthIntent } from '../components/auth/AuthIntent';
 
 type ResendState = 'idle' | 'sending' | 'sent' | 'error';
 
@@ -103,6 +104,7 @@ export default function SignUp() {
       title="Crear cuenta"
       submitLabel="Crear cuenta"
       passwordAutoComplete="new-password"
+      intro={<AuthIntent />}
       onSubmit={handleSignUp}
       onSuccess={() => navigate(from, { replace: true })}
       footer={

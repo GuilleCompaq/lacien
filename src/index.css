@@ -9,6 +9,8 @@
        sí: quedaba una franja de ~12px donde se veía pasar el contenido. */
     --nav-h: 3.25rem;
     --player-h: 3.75rem;
+    /* En error el mensaje ocupa dos renglones en vez de truncarse. */
+    --player-h-error: 4.75rem;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
     /* Ancho del producto. Es una app de radio pensada para el teléfono; en
        desktop se encuadra en vez de estirar una fila de 48px a 1800px. */

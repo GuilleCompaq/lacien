@@ -62,7 +62,14 @@ export function SaveFavoriteSheet({ radio, onClose }: SaveFavoriteSheetProps) {
   function go(path: string) {
     // La intención sobrevive al desvío y se aplica sola al volver con sesión.
     setPendingFavorite(radio.id);
-    navigate(path, { state: { from: location.pathname } });
+    // Además del id, viaja lo necesario para que la pantalla siguiente recuerde
+    // de qué emisora estábamos hablando.
+    navigate(path, {
+      state: {
+        from: location.pathname,
+        radio: { name: radio.name, frequency: radio.frequency, coverImage: radio.coverImage },
+      },
+    });
   }
 
   return (

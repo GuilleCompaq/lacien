@@ -22,6 +22,7 @@ export function usePlayer() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   /** Instancia de hls.js viva, solo para señales .m3u8 fuera de Safari. */
   const hlsRef = useRef<Hls | null>(null);
+
   useEffect(() => {
     const audio = new Audio();
     audio.preload = 'none';
@@ -39,11 +40,21 @@ export function usePlayer() {
       if (current === 'playing' || current === 'connecting') setStatus('paused');
     };
     const onError = () => {
+      // La red se chequea primero: sin esto, un corte de conexión producía
+      // MEDIA_ERR_SRC_NOT_SUPPORTED y el mensaje culpaba al formato de la emisora.
+      // El usuario descartaba para siempre una radio que funciona.
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        return fail('Sin conexión. Revisá tu red y reintentá.');
+      }
+
       switch (audio.error?.code) {
         case 2: // MEDIA_ERR_NETWORK
-          return fail('Se cortó la conexión con la señal. Probá de nuevo.');
-        case 4: // MEDIA_ERR_SRC_NOT_SUPPORTED
-          return fail('Esta emisora no está transmitiendo en un formato que el navegador pueda reproducir.');
+          return fail('Se cortó la conexión. Probá de nuevo.');
+        case 4:
+          // MEDIA_ERR_SRC_NOT_SUPPORTED lo produce tanto un formato que el
+          // navegador no entiende como una petición que nunca llegó. Afirmar la
+          // causa sería adivinar, así que se nombra el síntoma.
+          return fail('Esta señal no responde. Puede estar caída.');
         default:
           return fail('No pudimos conectar con la señal.');
       }
@@ -111,14 +122,14 @@ export function usePlayer() {
     void import('hls.js').then(({ default: HlsCtor }) => {
       if (cancelled || !audioRef.current) return;
       if (!HlsCtor.isSupported()) {
-        usePlayerStore.getState().fail('Tu navegador no puede reproducir el formato de esta señal.');
+        usePlayerStore.getState().fail('Tu navegador no reproduce este formato.');
         return;
       }
       const instance = new HlsCtor({ enableWorker: true });
       hlsRef.current = instance;
       instance.on(HlsCtor.Events.ERROR, (_event, data) => {
         if (!data.fatal) return;
-        usePlayerStore.getState().fail('Se cortó la conexión con la señal. Probá de nuevo.');
+        usePlayerStore.getState().fail('Se cortó la conexión. Probá de nuevo.');
       });
       // El efecto de estado ya corrió y salió temprano, porque en ese momento no
       // había ni `src` ni instancia. Así que la reproducción se retoma acá, una
@@ -160,7 +171,7 @@ export function usePlayer() {
             .getState()
             .fail(
               name === 'NotAllowedError'
-                ? 'El navegador bloqueó la reproducción. Tocá reproducir otra vez.'
+                ? 'El navegador bloqueó la reproducción.'
                 : 'No pudimos conectar con la señal.',
             );
         }

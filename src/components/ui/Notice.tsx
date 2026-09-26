@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { usePlayerStore } from '../../store/playerStore';
 import { AlertIcon, CloseIcon, HeartIcon } from '../icons';
+import { aboveNav, abovePlayer } from '../../lib/playerLayout';
 
 export interface NoticeData {
   kind: 'success' | 'error';
@@ -21,6 +22,7 @@ interface NoticeProps extends NoticeData {
  */
 export function Notice({ kind, message, onRetry, onDismiss }: NoticeProps) {
   const hasRadio = usePlayerStore((s) => s.currentRadio !== null);
+  const playerStatus = usePlayerStore((s) => s.status);
   const isError = kind === 'error';
 
   useEffect(() => {
@@ -34,9 +36,7 @@ export function Notice({ kind, message, onRetry, onDismiss }: NoticeProps) {
     <div
       className="app-bar z-30 px-4"
       style={{
-        bottom: hasRadio
-          ? 'calc(var(--nav-h) + var(--player-h) + var(--safe-bottom) + 0.5rem)'
-          : 'calc(var(--nav-h) + var(--safe-bottom) + 0.5rem)',
+        bottom: `calc(${hasRadio ? abovePlayer(playerStatus) : aboveNav()} + 0.5rem)`,
       }}
     >
       <div

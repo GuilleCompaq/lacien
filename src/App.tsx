@@ -4,6 +4,7 @@ import { Header } from './components/layout/Header';
 import { BottomNav } from './components/layout/BottomNav';
 import { MiniPlayer } from './components/layout/MiniPlayer';
 import { usePlayerStore } from './store/playerStore';
+import { aboveNav, abovePlayer } from './lib/playerLayout';
 import Home from './pages/Home';
 import Search from './pages/Search';
 import MyMusic from './pages/MyMusic';
@@ -15,6 +16,7 @@ import NotFound from './pages/NotFound';
 
 export default function App() {
   const hasCurrentRadio = usePlayerStore((s) => s.currentRadio !== null);
+  const status = usePlayerStore((s) => s.status);
 
   return (
     <>
@@ -25,9 +27,7 @@ export default function App() {
           className="flex-1"
           style={{
             // Derivado de las alturas reales de las barras, no de números sueltos.
-            paddingBottom: hasCurrentRadio
-              ? 'calc(var(--nav-h) + var(--player-h) + var(--safe-bottom))'
-              : 'calc(var(--nav-h) + var(--safe-bottom))',
+            paddingBottom: hasCurrentRadio ? abovePlayer(status) : aboveNav(),
           }}
         >
           <Routes>

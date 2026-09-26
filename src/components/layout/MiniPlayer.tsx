@@ -2,6 +2,7 @@ import { usePlayer } from '../../hooks/usePlayer';
 import { AlertIcon, CloseIcon, SpinnerIcon } from '../icons';
 import { PlayButton } from '../player/PlayButton';
 import { RadioCover } from '../home/RadioCover';
+import { aboveNav, playerHeight } from '../../lib/playerLayout';
 
 export function MiniPlayer() {
   const { currentRadio, status, errorMessage, stop } = usePlayer();
@@ -15,8 +16,8 @@ export function MiniPlayer() {
       // veía pasar el contenido de la página.
       className="app-bar z-20 flex items-center gap-3 border-t border-white/5 bg-bg-surfaceAlt px-4"
       style={{
-        bottom: 'calc(var(--nav-h) + var(--safe-bottom))',
-        height: 'var(--player-h)',
+        bottom: aboveNav(),
+        height: playerHeight(status),
       }}
       role="region"
       aria-label="Reproductor"
@@ -69,7 +70,7 @@ function StatusLine({ status, errorMessage, track, frequency }: StatusLineProps)
     return (
       <p className="flex items-start gap-1.5 text-xs text-state-live" role="alert">
         <AlertIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-        <span className="truncate">{errorMessage ?? 'No pudimos conectar con la señal.'}</span>
+        <span className="line-clamp-2">{errorMessage ?? 'No pudimos conectar con la señal.'}</span>
       </p>
     );
   }

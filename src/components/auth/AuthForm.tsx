@@ -20,6 +20,8 @@ interface AuthFormProps {
    * Estaba fijo en `current-password`, así que en el alta no ofrecía nada.
    */
   passwordAutoComplete?: 'current-password' | 'new-password';
+  /** Encabezado que recuerda por qué el usuario llegó hasta acá. */
+  intro?: ReactNode;
 }
 
 const FIELD_CLASS =
@@ -32,6 +34,7 @@ export function AuthForm({
   onSuccess,
   footer,
   passwordAutoComplete = 'current-password',
+  intro,
 }: AuthFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -60,6 +63,7 @@ export function AuthForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4 px-4 py-6">
+      {intro}
       <h1 className="text-2xl font-bold text-text-primary">{title}</h1>
 
       <label className="flex flex-col gap-1 text-sm text-text-secondary">
