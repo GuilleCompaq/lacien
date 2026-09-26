@@ -18,8 +18,9 @@ Ver [docs/SPEC-LaCienRadios.md](docs/SPEC-LaCienRadios.md) (arquitectura y compo
 2. Crear un proyecto en [supabase.com](https://supabase.com), y en el **SQL Editor** ejecutar en orden:
 
    - [supabase/migrations/0001_init.sql](supabase/migrations/0001_init.sql) — crea las tablas `radios` y `favorites` con RLS.
-   - [supabase/seed.sql](supabase/seed.sql) — carga las 43 radios argentinas del catálogo, con su logo y su frecuencia. Casi todas traen `stream_url` real; las que no, la app las muestra como "Sin señal" en vez de ofrecer un play que va a fallar.
+   - [supabase/seed.sql](supabase/seed.sql) — carga las 45 radios argentinas del catálogo (11 AM, 34 FM), con su logo, su frecuencia y su `stream_url`. Las tres que hoy no responden (ESPN, Radio Continental y Rosario 3) la app las resuelve en runtime: muestra el motivo en vez de ofrecer un play que va a fallar.
    - [supabase/migrations/0002_listeners_from_favorites.sql](supabase/migrations/0002_listeners_from_favorites.sql) — trigger que mantiene `radios.listeners` igual a la cantidad de usuarios que guardaron cada emisora.
+   - [supabase/migrations/0003_radio_score.sql](supabase/migrations/0003_radio_score.sql) — agrega `radios.score`, el puntaje editorial que ordena el **Top 10** de Inicio. Arranca en 0 en las 45, así que el carrusel no aparece hasta que se asigne alguno desde el dashboard.
 
    Después hay que configurar auth (URLs de redirección, SMTP, plantillas en castellano): ver
    **[docs/configuracion-supabase.md](docs/configuracion-supabase.md)**. Sin eso, los registros no

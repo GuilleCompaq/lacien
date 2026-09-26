@@ -19,31 +19,40 @@ export default function Home() {
   const recentIds = usePlayerStore((s) => s.recentIds);
 
   /**
-   * El historial guarda ids; acá se resuelven contra el catálogo, conservando el
-   * orden de escucha y descartando lo que ya no puede sonar. La más reciente va
-   * al destacado y el resto al carrusel, así ninguna aparece dos veces arriba.
+   * El historial guarda ids; acá se resuelve contra el catálogo el más reciente
+   * que todavía pueda sonar. Alcanza con uno: el carrusel de recientes se dio de
+   * baja y la tarjeta destacada es su único consumidor.
+   *
+   * Se recorre en vez de tomar `recentIds[0]` porque la última escuchada puede
+   * haber salido del catálogo o haberse quedado sin señal usable, y en ese caso
+   * la tarjeta debe caer a la anterior, no desaparecer.
    */
-  const recent = useMemo(() => {
+  const featured = useMemo(() => {
     const byId = new Map(radios.map((radio) => [radio.id, radio]));
-    return recentIds
-      .map((id) => byId.get(id))
-      .filter((radio): radio is NonNullable<typeof radio> => Boolean(radio))
-      .filter((radio) => isStreamPlayable(radio.streamUrl));
+    for (const id of recentIds) {
+      const radio = byId.get(id);
+      if (radio && isStreamPlayable(radio.streamUrl)) return radio;
+    }
+    return undefined;
   }, [radios, recentIds]);
 
-  const [featured, ...olderRecent] = recent;
-
   /**
-   * Top 10 por reproducciones. `useRadios` ya pide la lista ordenada por
-   * `listeners` descendente, así que acá solo se recorta.
+   * Top 10 editorial, ordenado por el `score` que asigna el administrador.
    *
-   * El filtro `listeners > 0` es lo que mantiene honesta la sección: mientras
-   * nadie haya reproducido nada, no hay ranking que mostrar y el carrusel no
-   * aparece, en vez de rotular como "más escuchadas" a diez emisoras en orden
-   * alfabético. Se llena solo a medida que la gente escucha.
+   * El filtro `score > 0` es lo que mantiene honesta la sección: sin puntajes
+   * cargados no hay ranking que mostrar y el carrusel no aparece, en vez de
+   * rotular como "Top 10" a las diez primeras emisoras del abecedario.
+   *
+   * El desempate por nombre importa: `score` es un entero que se repite con
+   * facilidad, y sin segundo criterio el orden de dos emisoras empatadas
+   * dependería de cómo vino la respuesta, cambiando entre cargas.
    */
   const topRadios = useMemo(
-    () => radios.filter((r) => r.listeners > 0 && isStreamPlayable(r.streamUrl)).slice(0, 10),
+    () =>
+      radios
+        .filter((r) => r.score > 0 && isStreamPlayable(r.streamUrl))
+        .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, 'es'))
+        .slice(0, 10),
     [radios],
   );
 
@@ -70,9 +79,11 @@ export default function Home() {
           que precederlas en el DOM aunque no se dibuje. */}
       <h1 className="sr-only">Radios</h1>
 
-      {/* Sin historial, Inicio arranca en los filtros y la lista: nada inventado
-          ocupando la primera pantalla. Las dos secciones aparecen con el uso. */}
-      <StoriesBar title="Las más guardadas" radios={topRadios} />
+      {/* Ninguna de las dos piezas de arriba se dibuja vacía: el Top 10 espera a
+          que haya puntajes cargados y la tarjeta a que haya historial. En una
+          instalación nueva, Inicio arranca directo en los filtros y la lista —
+          nada inventado ocupando la primera pantalla. */}
+      <StoriesBar title="Top 10" radios={topRadios} />
       {featured && (
         <FeaturedCard
           radio={featured}
@@ -80,7 +91,6 @@ export default function Home() {
           onToggleFavorite={() => requestToggleFavorite(featured)}
         />
       )}
-      <StoriesBar title="Recientes" radios={olderRecent} />
       <FilterPills value={band} onChange={setBand} />
       <RadioGrid
         title={bandTitle(band)}

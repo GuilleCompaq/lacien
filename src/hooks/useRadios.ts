@@ -14,11 +14,11 @@ export function useRadios() {
     supabase
       .from('radios')
       .select('*')
-            // El orden por oyentes ya estaba, pero las 43 filas valen 0: sin desempate,
-      // lo que se ve es orden de inserción. Con el nombre como segundo criterio la
-      // lista es estable y escaneable hoy, y el día que haya oyentes reales manda
-      // la popularidad sin tocar nada.
-      .order('listeners', { ascending: false })
+      // Orden alfabético, y solo alfabético. Antes encabezaba `listeners`, con lo
+      // cual el catálogo abría con las mismas emisoras que el carrusel de arriba
+      // y en el mismo orden: dos secciones distintas mostrando lo mismo. El Top 10
+      // ahora se ordena aparte, por `score`, así que esta lista puede ser lo único
+      // que la otra no es: completa y escaneable.
       .order('name', { ascending: true })
       .then(({ data, error }) => {
         if (cancelled) return;

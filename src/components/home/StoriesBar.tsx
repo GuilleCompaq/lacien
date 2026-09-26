@@ -11,9 +11,12 @@ interface StoriesBarProps {
 /**
  * Carrusel de emisoras en formato story, con encabezado propio.
  *
- * Lo usan dos secciones con sentidos distintos —"Las más escuchadas" y
- * "Recientes"— y ninguna se dibuja vacía: sin contenido, la sección no aparece
- * en lugar de dejar un título sobre la nada.
+ * Hoy lo usa una sola sección, el "Top 10"; el carrusel de recientes se dio de
+ * baja. Sigue recibiendo el título por parámetro porque la pieza es genérica y
+ * fijarlo acá no ahorraría nada.
+ *
+ * No se dibuja vacío: sin contenido la sección no aparece, en lugar de dejar un
+ * título sobre la nada.
  */
 export function StoriesBar({ title, radios }: StoriesBarProps) {
   const play = usePlayerStore((s) => s.play);

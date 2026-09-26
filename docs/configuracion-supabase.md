@@ -16,6 +16,7 @@ Dominio de producción: `https://lacien.vercel.app`
 | [`supabase/migrations/0001_init.sql`](../supabase/migrations/0001_init.sql) | Tablas `radios` y `favorites`, con RLS |
 | [`supabase/seed.sql`](../supabase/seed.sql) | Las 43 emisoras del catálogo |
 | [`supabase/migrations/0002_listeners_from_favorites.sql`](../supabase/migrations/0002_listeners_from_favorites.sql) | Trigger que mantiene `listeners` |
+| [`supabase/migrations/0003_radio_score.sql`](../supabase/migrations/0003_radio_score.sql) | Columna `score`: el puntaje editorial del Top 10 |
 
 ### Sobre la 0002
 
@@ -30,6 +31,37 @@ primaria de `favorites` es `(user_id, radio_id)`, así que un usuario no puede c
 > **La carga inicial sobrescribe** lo que `listeners` tenga en ese momento.
 
 **Comprobar:** guardá una radio desde la app y verificá que su `listeners` subió a 1.
+
+### Sobre la 0003 — cargar el Top 10
+
+`score` es un entero que asignás vos: ordena el carrusel **Top 10** de mayor a menor, y **0 deja la
+emisora afuera**. Las 43 arrancan en 0, así que hasta que cargues puntajes el carrusel directamente
+no se dibuja — no hay "Top 10" antes de que alguien decida cuál es.
+
+Que lo asigne el administrador no es una comodidad, es la propiedad de seguridad: `radios` tiene
+**una sola política de RLS, de SELECT**, así que ningún cliente puede escribir esta columna a través
+de la API. Se edita desde el dashboard o con la `service_role key`, que salta RLS. Un ranking que el
+público no puede tocar no se puede inflar.
+
+Desde el **SQL Editor**, varios de una:
+
+```sql
+update public.radios r
+   set score = v.score
+  from (values
+    ('La 100', 100),
+    ('Aspen',   95),
+    ('Vorterix', 90)
+  ) as v(name, score)
+ where r.name = v.name;
+```
+
+Para sacar una del Top 10, volvela a 0. Solo entran las diez de mayor puntaje **que además tengan
+señal reproducible**: una emisora destacada sin `stream_url` usable no se muestra, porque el
+carrusel arranca la reproducción al tocarla.
+
+**Comprobar:** asigná un `score` a tres emisoras y recargá Inicio — el carrusel aparece arriba del
+reproductor, con esas tres en orden descendente.
 
 ---
 

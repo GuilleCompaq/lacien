@@ -33,7 +33,13 @@ export interface Radio {
   name: string; // ej. "FM-100"
   genre: Genre;
   frequency: string; // ej. "99.9 FM"
-  listeners: number; // ej. 12400
+  listeners: number; // cantidad de usuarios que la guardaron (trigger de la 0002)
+  /**
+   * Puntaje editorial que ordena el Top 10. Lo asigna el administrador desde el
+   * dashboard: `radios` solo tiene política de SELECT, así que ningún cliente
+   * puede escribirlo. 0 deja la emisora fuera del carrusel.
+   */
+  score: number;
   streamUrl: string;
   coverEmoji?: string; // placeholder visual (guitarra, saxofón, etc.)
   coverImage?: string; // opcional si luego hay imágenes reales
@@ -51,6 +57,8 @@ export interface RadioRow {
   genre: Genre;
   frequency: string;
   listeners: number;
+  /** Opcional: una base sin la migración 0003 aplicada no devuelve la columna. */
+  score?: number | null;
   stream_url: string;
   cover_emoji: string | null;
   cover_image: string | null;
@@ -65,6 +73,9 @@ export function mapRadioRow(row: RadioRow): Radio {
     genre: row.genre,
     frequency: row.frequency,
     listeners: row.listeners,
+    // Una base sin la 0003 aplicada devuelve la fila sin `score`; tratarlo como 0
+    // deja el carrusel oculto en vez de romper el orden con NaN.
+    score: row.score ?? 0,
     streamUrl: row.stream_url,
     coverEmoji: row.cover_emoji ?? undefined,
     coverImage: row.cover_image ?? undefined,

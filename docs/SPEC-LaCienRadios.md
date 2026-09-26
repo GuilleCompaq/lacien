@@ -152,7 +152,9 @@ Supabase es la única fuente de datos: no hay mock estático de radios en el fro
 - **`radios`**: catálogo público (`id, name, genre, frequency, listeners, stream_url, cover_emoji, cover_image, is_live, current_track jsonb`). RLS: lectura pública (`select using (true)`), sin políticas de escritura para `anon` (se administra desde el dashboard o `service_role`).
 - **`favorites`**: `(user_id references auth.users, radio_id references radios, created_at)`, PK compuesta. RLS: cada usuario solo puede `select`/`insert`/`delete` sus propias filas (`auth.uid() = user_id`).
 
-Catálogo real en `supabase/seed.sql`: 43 radios argentinas (Radio 10, La 100, Vorterix, Los 40 Principales, Cadena 3, etc.) con su logo en `public/radios/*.webp|png`. **Pendiente completar**: `stream_url` está en `'PENDIENTE'` para todas (no hay URL de streaming real cargada todavía), y varias tienen `frequency = 'Frecuencia pendiente'` cuando no había certeza del dato real. Actualizar esos valores directamente en la tabla `radios` de Supabase a medida que se consigan.
+Catálogo real en `supabase/seed.sql`: 45 radios argentinas (Radio 10, La 100, Vorterix, Los 40 Principales, Cadena 3, etc.) con su logo en `public/radios/*.webp|png`. Las 45 tienen `stream_url` y frecuencia real — ya no queda ninguna en `'PENDIENTE'` ni con `'Frecuencia pendiente'`.
+
+**Pendiente completar**: `current_track` es `null` en las 45 (no hay integración de "sonando ahora") e `is_live` es `true` en las 45, así que el anillo de gradiente y el badge LIVE todavía no pueden ser falsos. No hay columna de ciudad, y hay diales repetidos entre emisoras de provincias distintas que sin ese dato la UI no puede distinguir.
 
 ### Autenticación
 

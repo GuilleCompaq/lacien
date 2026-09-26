@@ -2,6 +2,31 @@ import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from './useAuth';
 import { takePendingFavorite } from '../lib/pendingFavorite';
+import { translateDataError } from '../lib/authErrors';
+
+interface FavoritesState {
+  ids: Set<string>;
+  loading: boolean;
+  error: string | null;
+  /** Id del favorito pendiente que se acaba de aplicar, para poder confirmarlo. */
+  claimedId: string | null;
+  /**
+   * De quién son estos datos. Es la clave de todo lo que sigue: sin esto, al
+   * cerrar sesión quedaba un render mostrando los corazones del usuario anterior,
+   * porque el estado solo se limpiaba después, desde un efecto.
+   */
+  forUser: string | null;
+}
+
+const NINGUNO: ReadonlySet<string> = new Set();
+
+const INICIAL: FavoritesState = {
+  ids: new Set(),
+  loading: false,
+  error: null,
+  claimedId: null,
+  forUser: null,
+};
 
 /**
  * Favoritos persistidos en Supabase, ligados al usuario autenticado.
@@ -11,41 +36,45 @@ import { takePendingFavorite } from '../lib/pendingFavorite';
  */
 export function useFavorites() {
   const { user } = useAuth();
-  const [favoriteIds, setFavoriteIds] = useState<Set<string>>(new Set());
-  // Arranca en true: con false, la UI afirmaría "no tenés favoritas" durante el
-  // primer render, antes de haber consultado. Un cero sin confirmar es una mentira.
-  const [loading, setLoading] = useState(true);
+  const userId = user?.id ?? null;
+  const [state, setState] = useState<FavoritesState>(INICIAL);
+
   /**
-   * Una consulta fallida no es una lista vacía. Sin este estado, un backend caído
-   * se renderizaba como "todavía no agregaste ninguna" — la misma mentira que el
-   * comentario de arriba dice evitar, servida por la ruta de error.
+   * Todo lo que se expone se deriva durante el render, no se guarda.
+   *
+   * Si el estado almacenado pertenece a otro usuario —o a ninguno— esta lectura
+   * ya devuelve vacío, sin esperar a que corra ningún efecto. Eso elimina la
+   * ventana en la que la UI mostraba datos que ya no correspondían, y de paso el
+   * render extra que costaba limpiarlos.
    */
-  const [error, setError] = useState<string | null>(null);
-  /** Id del favorito pendiente que se acaba de aplicar, para poder confirmarlo. */
-  const [claimedId, setClaimedId] = useState<string | null>(null);
+  const esDelUsuarioActual = state.forUser === userId;
+  const favoriteIds = esDelUsuarioActual ? state.ids : NINGUNO;
+  const error = esDelUsuarioActual ? state.error : null;
+  const claimedId = esDelUsuarioActual ? state.claimedId : null;
+  // Con sesión, mientras los datos no sean de este usuario todavía estamos
+  // cargando. Sin sesión no hay nada que esperar.
+  const loading = userId !== null && (!esDelUsuarioActual || state.loading);
 
   useEffect(() => {
-    if (!user) {
-      setFavoriteIds(new Set());
-      setError(null);
-      setLoading(false);
-      return;
-    }
+    if (!userId) return;
 
     let cancelled = false;
-    setLoading(true);
-    setError(null);
 
     supabase
       .from('favorites')
       .select('radio_id')
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .then(({ data, error: fetchError }) => {
         if (cancelled) return;
 
+        // Una consulta fallida no es una lista vacía: sin distinguirlas, un
+        // backend caído se renderizaba como "todavía no agregaste ninguna".
         if (fetchError) {
-          setError(fetchError.message);
-          setLoading(false);
+          setState({
+            ...INICIAL,
+            error: translateDataError(fetchError),
+            forUser: userId,
+          });
           return;
         }
 
@@ -59,71 +88,64 @@ export function useFavorites() {
           ids.add(pending);
           void supabase
             .from('favorites')
-            .insert({ user_id: user.id, radio_id: pending })
+            .insert({ user_id: userId, radio_id: pending })
             .then(({ error: insertError }) => {
               if (cancelled) return;
-              if (insertError) {
-                setFavoriteIds((prev) => {
-                  const next = new Set(prev);
-                  next.delete(pending);
-                  return next;
-                });
-              } else {
-                setClaimedId(pending);
-              }
+              setState((prev) => {
+                if (prev.forUser !== userId) return prev;
+                if (!insertError) return { ...prev, claimedId: pending };
+                const next = new Set(prev.ids);
+                next.delete(pending);
+                return { ...prev, ids: next };
+              });
             });
         }
 
-        setFavoriteIds(ids);
-        setLoading(false);
+        setState({ ids, loading: false, error: null, claimedId: null, forUser: userId });
       });
 
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [userId]);
 
   const isFavorite = useCallback((radioId: string) => favoriteIds.has(radioId), [favoriteIds]);
 
   const toggleFavorite = useCallback(
     async (radioId: string): Promise<{ error: string | 'auth-required' | null }> => {
-      if (!user) return { error: 'auth-required' };
+      if (!userId) return { error: 'auth-required' };
 
       const wasFavorite = favoriteIds.has(radioId);
 
-      setFavoriteIds((prev) => {
-        const next = new Set(prev);
-        if (wasFavorite) {
-          next.delete(radioId);
-        } else {
-          next.add(radioId);
-        }
-        return next;
-      });
+      // Solo toca el estado si sigue siendo del mismo usuario: una sesión que
+      // cambió a mitad de la escritura no debe recibir el cambio de la anterior.
+      const aplicar = (agregar: boolean) =>
+        setState((prev) => {
+          if (prev.forUser !== userId) return prev;
+          const next = new Set(prev.ids);
+          if (agregar) next.add(radioId);
+          else next.delete(radioId);
+          return { ...prev, ids: next };
+        });
+
+      aplicar(!wasFavorite);
 
       const { error: writeError } = wasFavorite
-        ? await supabase.from('favorites').delete().eq('user_id', user.id).eq('radio_id', radioId)
-        : await supabase.from('favorites').insert({ user_id: user.id, radio_id: radioId });
+        ? await supabase.from('favorites').delete().eq('user_id', userId).eq('radio_id', radioId)
+        : await supabase.from('favorites').insert({ user_id: userId, radio_id: radioId });
 
-      if (writeError) {
-        // revertir la actualización optimista si Supabase rechazó el cambio
-        setFavoriteIds((prev) => {
-          const next = new Set(prev);
-          if (wasFavorite) {
-            next.add(radioId);
-          } else {
-            next.delete(radioId);
-          }
-          return next;
-        });
-      }
+      // revertir la actualización optimista si Supabase rechazó el cambio
+      if (writeError) aplicar(wasFavorite);
 
       return { error: writeError?.message ?? null };
     },
-    [favoriteIds, user],
+    [favoriteIds, userId],
   );
 
-  const clearClaimed = useCallback(() => setClaimedId(null), []);
+  const clearClaimed = useCallback(
+    () => setState((prev) => (prev.claimedId === null ? prev : { ...prev, claimedId: null })),
+    [],
+  );
 
   return { favoriteIds, isFavorite, toggleFavorite, loading, error, claimedId, clearClaimed };
 }
