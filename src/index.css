@@ -83,6 +83,19 @@
     margin-inline: auto;
   }
 
+  /* Piso táctil de 44px. Estaba resuelto por aritmética —`p-3` con un icono de
+     20px da exactamente 44— y por eso se rompía en silencio: alcanzaba con
+     pasarle al icono un `h-4 w-4` para que el botón quedara en 40 sin que nada
+     lo señalara. Pasó tres veces. Declarado acá, el tamaño del icono deja de
+     decidir el del objetivo. */
+  .tap-target {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
   .app-bar {
     position: fixed;
     left: 50%;

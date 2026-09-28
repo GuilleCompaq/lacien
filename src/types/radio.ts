@@ -41,8 +41,7 @@ export interface Radio {
    */
   score: number;
   streamUrl: string;
-  coverEmoji?: string; // placeholder visual (guitarra, saxofón, etc.)
-  coverImage?: string; // opcional si luego hay imágenes reales
+  coverImage?: string; // sin tapa, RadioCover dibuja el aparato
   isLive: boolean;
   currentTrack?: {
     artist: string;
@@ -60,7 +59,6 @@ export interface RadioRow {
   /** Opcional: una base sin la migración 0003 aplicada no devuelve la columna. */
   score?: number | null;
   stream_url: string;
-  cover_emoji: string | null;
   cover_image: string | null;
   is_live: boolean;
   current_track: { artist: string; title: string } | null;
@@ -77,7 +75,6 @@ export function mapRadioRow(row: RadioRow): Radio {
     // deja el carrusel oculto en vez de romper el orden con NaN.
     score: row.score ?? 0,
     streamUrl: row.stream_url,
-    coverEmoji: row.cover_emoji ?? undefined,
     coverImage: row.cover_image ?? undefined,
     isLive: row.is_live,
     currentTrack: row.current_track ?? undefined,

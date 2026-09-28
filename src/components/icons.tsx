@@ -169,6 +169,33 @@ export function HeartIcon({ className = 'h-5 w-5', filled = false }: IconProps &
   );
 }
 
+/**
+ * Placeholder de tapa: un aparato de radio. Reemplaza al emoji 📻, que era el
+ * único glifo que quedaba en el producto y contradecía la regla de fix007.
+ *
+ * Se dibuja al tamaño del contenedor (`h-full w-full` por defecto) porque ocupa
+ * el hueco de una imagen, no el de un icono de control.
+ */
+export function RadioDeviceIcon({ className = 'h-full w-full p-2' }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M7 8.5 17 4" />
+      <rect x="2.5" y="8.5" width="19" height="11.5" rx="2.5" />
+      <circle cx="8.75" cy="14.25" r="2.75" />
+      <path d="M15 12.25h3.5M15 16.25h3.5" />
+    </svg>
+  );
+}
+
 export function RetryIcon({ className = 'h-4 w-4' }: IconProps) {
   return (
     <svg

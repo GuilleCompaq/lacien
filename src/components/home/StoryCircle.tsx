@@ -15,7 +15,7 @@ export function StoryCircle({ radio, onSelect }: StoryCircleProps) {
       className="flex w-16 shrink-0 flex-col items-center gap-1 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
       <div
-        className={`relative flex h-16 w-16 items-center justify-center rounded-full text-2xl ${
+        className={`relative flex h-16 w-16 items-center justify-center rounded-full ${
           radio.isLive ? 'bg-brand-gradient p-0.5' : 'bg-white/10 p-0.5'
         }`}
       >

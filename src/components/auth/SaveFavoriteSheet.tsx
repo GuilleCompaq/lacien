@@ -93,13 +93,13 @@ export function SaveFavoriteSheet({ radio, onClose }: SaveFavoriteSheetProps) {
           type="button"
           onClick={onClose}
           aria-label="Cerrar"
-          className="absolute right-3 top-3 rounded-full p-2.5 text-text-muted transition-colors hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="tap-target absolute right-2 top-2 rounded-full text-text-muted transition-colors hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           <CloseIcon />
         </button>
 
         <div className="mb-4 flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-bg-surface text-2xl">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-bg-surface">
             <RadioCover radio={radio} />
           </div>
           <div className="min-w-0">

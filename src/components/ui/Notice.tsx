@@ -53,7 +53,7 @@ export function Notice({ kind, message, onRetry, onDismiss }: NoticeProps) {
           <button
             type="button"
             onClick={onRetry}
-            className="shrink-0 rounded-lg px-2 py-1 text-sm font-semibold text-accent-hover transition-colors hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="tap-target shrink-0 rounded-lg px-2 text-sm font-semibold text-accent-hover transition-colors hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
             Reintentar
           </button>
@@ -63,7 +63,7 @@ export function Notice({ kind, message, onRetry, onDismiss }: NoticeProps) {
           type="button"
           onClick={onDismiss}
           aria-label="Cerrar aviso"
-          className="-m-1 shrink-0 rounded-full p-3 text-text-muted transition-colors hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          className="tap-target -m-1 shrink-0 rounded-full text-text-muted transition-colors hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
         >
           <CloseIcon className="h-4 w-4" />
         </button>

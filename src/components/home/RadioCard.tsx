@@ -26,7 +26,7 @@ export function RadioCard({ radio, isFavorite, onToggleFavorite }: RadioCardProp
       }`}
     >
       <div
-        className={`flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-bg-surfaceAlt text-2xl ${
+        className={`flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-bg-surfaceAlt ${
           issue ? 'opacity-40 grayscale' : ''
         }`}
       >
@@ -61,7 +61,7 @@ export function RadioCard({ radio, isFavorite, onToggleFavorite }: RadioCardProp
           onClick={onToggleFavorite}
           aria-label={isFavorite ? `Quitar ${radio.name} de favoritos` : `Agregar ${radio.name} a favoritos`}
           aria-pressed={isFavorite}
-          className={`shrink-0 rounded-full p-3 -m-1.5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+          className={`tap-target shrink-0 rounded-full -m-1.5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
             isFavorite ? 'text-accent' : 'text-text-muted hover:text-text-secondary'
           }`}
         >

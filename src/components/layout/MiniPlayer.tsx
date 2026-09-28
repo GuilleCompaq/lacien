@@ -23,7 +23,7 @@ export function MiniPlayer() {
       aria-label="Reproductor"
     >
       <div
-        className={`flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-bg-surface text-xl ${
+        className={`flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-bg-surface ${
           status === 'error' ? 'opacity-50 grayscale' : ''
         }`}
       >
@@ -46,7 +46,7 @@ export function MiniPlayer() {
         type="button"
         onClick={stop}
         aria-label={`Cerrar el reproductor y dejar de escuchar ${currentRadio.name}`}
-        className="-m-1.5 shrink-0 rounded-full p-3 text-text-muted transition-colors hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+        className="tap-target -m-1.5 shrink-0 rounded-full text-text-muted transition-colors hover:text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       >
         <CloseIcon className="h-5 w-5" />
       </button>

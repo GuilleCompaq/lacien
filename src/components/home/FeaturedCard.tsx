@@ -51,7 +51,7 @@ export function FeaturedCard({ radio, isFavorite, onToggleFavorite }: FeaturedCa
                   : `Agregar ${radio.name} a favoritos`
               }
               aria-pressed={isFavorite}
-              className={`-m-1.5 ml-auto shrink-0 rounded-full p-3 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
+              className={`tap-target -m-1.5 ml-auto shrink-0 rounded-full transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${
                 isFavorite ? 'text-accent' : 'text-text-muted hover:text-text-secondary'
               }`}
             >
@@ -62,7 +62,7 @@ export function FeaturedCard({ radio, isFavorite, onToggleFavorite }: FeaturedCa
 
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-bg-surfaceAlt text-2xl">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-bg-surfaceAlt">
               <RadioCover radio={radio} />
             </div>
             <div className="min-w-0">

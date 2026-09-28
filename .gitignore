@@ -23,6 +23,9 @@ Plans.md
 plans.md
 fixs/
 fixs/*
+# Registros de seguridad: enumeran debilidades conocidas, no van al repo público
+secure/
+secure/*
 .impeccable/
 .mcp.json
 # Capturas y logs que genera el servidor MCP de Playwright
