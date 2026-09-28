@@ -1,6 +1,10 @@
 # Sistema de Colores — LaCienRadios
 
-> Paleta de colores inspirada en Instagram (modo oscuro, gradiente cálido→magenta→púrpura), definida como fuente de verdad para la implementación en React.
+> Paleta oscura inspirada en Instagram (fondo violáceo de tres pisos, gradiente
+> cálido→magenta→púrpura, un solo acento rosa). La fuente de verdad es
+> [`src/theme/colors.ts`](../src/theme/colors.ts); este documento la describe.
+> Para el sistema de diseño completo (tipografía, forma, componentes, reglas),
+> ver **[DESIGN.md](../DESIGN.md)**.
 
 ## 1. Tokens de color
 
@@ -35,15 +39,7 @@ export const colors = {
     success: '#3DDC97',
   },
 
-  // Colores por categoría (tarjetas de género)
-  category: {
-    rock: '#1E3A5F',
-    pop: '#3B1E5F',
-    jazz: '#7A3B1E',
-    lofi: '#1E5F3B',
-  },
-
-  // Paradas del gradiente de marca
+  // Paradas del gradiente de marca (fuente única del brand-gradient)
   gradient: {
     from: '#FEDA75',
     via1: '#FA7E1E',
@@ -55,59 +51,59 @@ export const colors = {
 
 ## 2. Configuración Tailwind
 
-Archivo: `tailwind.config.js`
+Archivo: `tailwind.config.ts` (TypeScript, no `.js`)
 
-```js
-const { colors } = require('./src/theme/colors.ts');
+```ts
+import { colors } from './src/theme/colors';
 
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        bg: colors.bg,
-        text: colors.text,
-        accent: colors.accent,
-        state: colors.state,
-        category: colors.category,
-      },
-      backgroundImage: {
-        'brand-gradient':
-          'linear-gradient(135deg, #FEDA75 0%, #FA7E1E 35%, #D62976 70%, #962FBF 100%)',
-      },
+// ...
+theme: {
+  extend: {
+    colors: {
+      bg: colors.bg,
+      text: colors.text,
+      accent: colors.accent,
+      state: colors.state,
+    },
+    backgroundImage: {
+      // Construido desde colors.gradient: los hexes viven en un solo lugar.
+      'brand-gradient': `linear-gradient(135deg, ${colors.gradient.from} 0%, ${colors.gradient.via1} 35%, ${colors.gradient.via2} 70%, ${colors.gradient.to} 100%)`,
     },
   },
-};
+},
 ```
+
+El gradiente ya no se escribe con literales sueltos: se arma a partir de
+`colors.gradient`, así que hay un solo lugar donde cambiar sus paradas.
 
 ## 3. Mapeo por componente
 
+Refleja el build real al 2026-09-28. Los géneros de radio existen en el tipo
+`Radio` pero **no tienen color propio**: no hay tarjetas de categoría en la app.
+
 | Componente | Uso de color |
 |---|---|
-| Header / Logo | Texto con `bg-brand-gradient` + `bg-clip-text text-transparent`; fondo del header en `bg-surface` |
-| StoryCircle (aros "EN VIVO") | Borde con `bg-brand-gradient`; badge "LIVE" en `state.live` |
-| FilterPills ("Todo", "Rock"...) | Activo: `bg-accent` + texto blanco. Inactivo: `bg-surfaceAlt` + `text-secondary` |
-| CategoryCard | Gradiente `from-category-{genre} to-bg-base` |
+| Header / Logo | Texto con `bg-brand-gradient` + `bg-clip-text text-transparent`; header sobre `bg-surface` |
+| StoryCircle | Aro con `bg-brand-gradient` cuando `isLive`; si no, `bg-white/10` |
+| FeaturedCard | Marco exterior `bg-brand-gradient`, panel interior sólido `bg-bg-base` |
+| FilterPills | Activo: `bg-accent` + `text-bg-base`. Inactivo: `bg-surfaceAlt` + `text-secondary` |
 | PlayButton | `bg-accent`, `hover:bg-accent-hover`, `active:bg-accent-active` |
-| BottomNav | Fondo `bg-surface`; ítem activo `text-accent`; inactivo `text-muted` |
-| Texto de frecuencia/precio | `text-accent` |
+| Botón primario (auth) | Igual que PlayButton, con `text-bg-base` |
+| BottomNav | Fondo `bg-surfaceAlt`; ítem activo `text-accent`; inactivo `text-muted` |
+| Dial / frecuencia | `text-primary` o `text-muted` con `tabular-nums`; **nunca** `text-accent` |
+| Error de reproducción | `state.live`; confirmación de guardado: `state.success` |
 
-## 4. Ejemplo de componente React
+## 4. Reglas de uso
 
-```tsx
-function CategoryCard({ genre, name, listeners, freq }: CategoryCardProps) {
-  return (
-    <div className={`rounded-2xl p-4 bg-gradient-to-br from-category-${genre} to-bg-base border border-white/5`}>
-      <h3 className="text-text-primary font-bold">{name}</h3>
-      <p className="text-text-muted text-sm">{listeners} oyentes</p>
-      <span className="text-accent font-semibold">{freq}</span>
-    </div>
-  );
-}
-```
-
-## 5. Reglas de uso
-
-- `accent` se reserva exclusivamente para elementos interactivos y estados activos, nunca para texto decorativo.
-- `brand-gradient` se limita a logo, aros de historias y como máximo un CTA destacado por vista.
-- Los colores de `category` siempre degradan hacia `bg.base` en los bordes de la tarjeta, para mantener cohesión con el fondo general.
-- No introducir nuevos valores hex fuera de `colors.ts`; cualquier color nuevo debe agregarse como token.
+- `accent` se reserva para elementos interactivos y estados activos, **nunca**
+  para texto decorativo ni para el dial.
+- Los tres tonos de `accent` cumplen una función: `DEFAULT` en reposo, `hover`
+  al apuntar, `active` al pulsar. Un botón que use `hover` también para `active`
+  no distingue pulsar de apuntar — corregido en todos los botones primarios.
+- `brand-gradient` se limita a logo, aros de historias y el marco de la tarjeta
+  destacada. Nunca detrás de texto largo: sobre sus paradas claras el texto
+  secundario cae por debajo del contraste mínimo (ver la Regla del Panel Sólido
+  en [DESIGN.md](../DESIGN.md)).
+- `state.live` es rojo de falla, no de "en vivo". El estado en vivo se comunica
+  con el aro de gradiente, no con rojo.
+- No introducir hex fuera de `colors.ts`; cualquier color nuevo entra como token.

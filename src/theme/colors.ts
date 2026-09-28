@@ -26,18 +26,8 @@ export const colors = {
     success: '#3DDC97',
   },
 
-  // Colores por categoría (tarjetas de género)
-  category: {
-    rock: '#1E3A5F',
-    pop: '#3B1E5F',
-    folklore: '#7A5F1E',
-    tango: '#5F1E3B',
-    clasica: '#1E5F5F',
-    deportiva: '#1E5F3B',
-    general: '#3B3B3B',
-  },
-
-  // Paradas del gradiente de marca
+  // Paradas del gradiente de marca. Fuente única: tailwind.config.ts arma el
+  // `brand-gradient` a partir de estos cuatro valores, no de literales sueltos.
   gradient: {
     from: '#FEDA75',
     via1: '#FA7E1E',

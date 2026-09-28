@@ -10,11 +10,11 @@ export default {
         text: colors.text,
         accent: colors.accent,
         state: colors.state,
-        category: colors.category,
       },
       backgroundImage: {
-        'brand-gradient':
-          'linear-gradient(135deg, #FEDA75 0%, #FA7E1E 35%, #D62976 70%, #962FBF 100%)',
+        // Construido desde colors.gradient: los hexes viven en un solo lugar.
+        // Los porcentajes y el ángulo son geometría del gradiente, no color.
+        'brand-gradient': `linear-gradient(135deg, ${colors.gradient.from} 0%, ${colors.gradient.via1} 35%, ${colors.gradient.via2} 70%, ${colors.gradient.to} 100%)`,
       },
     },
   },
