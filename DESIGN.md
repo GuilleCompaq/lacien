@@ -355,8 +355,10 @@ de 6px más el dial o el track) e inactivo (solo el dial).
 Botón de 64px de ancho: aro de 64px con 2px de relleno (`p-0.5`) en gradiente de marca cuando la
 emisora está al aire o en `white/10` cuando no, interior circular `bg-surface` con la tapa, y nombre
 de 12px `text-secondary` truncado y centrado debajo. El carrusel (`StoriesBar`) es `overflow-x-auto`
-con la barra oculta (`.scrollbar-none`), `gap-3` y encabezado propio a 14px/600. **No se dibuja
-vacío:** sin contenido la sección entera no existe.
+con la barra oculta (`.scrollbar-none`), `gap-3` y encabezado propio a 14px/600. Con puntero fino
+y hover (PC) suma flechas de 36px en `bg-surface` con borde `white/10`, centradas sobre los aros:
+cada una aparece solo si queda contenido de ese lado y avanza el 80% del ancho visible. En táctil no
+existen. **No se dibuja vacío:** sin contenido la sección entera no existe.
 
 ### Chip "Sin señal"
 Reemplaza al disco de play cuando la señal no puede sonar: círculo del mismo diámetro que el botón
