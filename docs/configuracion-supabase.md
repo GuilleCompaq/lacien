@@ -103,7 +103,10 @@ Es el paso que **más silenciosamente rompe registros**: no da error, el mail si
 Vienen en inglés. En una app íntegramente en es-AR, el primer mensaje que recibe un usuario estaría
 en otro idioma.
 
-La variable del enlace es `{{ .ConfirmationURL }}` en ambas.
+La variable del enlace es `{{ .ConfirmationURL }}` en ambas. **Mantenerla así:** el cliente usa el
+flujo PKCE (`flowType: 'pkce'`, ver `src/lib/supabaseClient.ts`), que depende de `{{ .ConfirmationURL }}`
+para que el enlace vuelva con `?code=…` en vez de exponer los tokens en la URL. Un enlace armado a
+mano con `{{ .Token }}` rompería ese flujo.
 
 **Confirm signup**
 
@@ -126,14 +129,51 @@ La variable del enlace es `{{ .ConfirmationURL }}` en ambas.
 
 ---
 
-## 5. Política de contraseñas
+## 5. Endurecimiento de seguridad (SEC-3)
 
-**Authentication → Policies** (según la versión del dashboard puede estar en Providers → Email)
+Checklist del hallazgo SEC-3 (ver `secure/secure003.md`). Todo esto es configuración del dashboard;
+lo que tiene contraparte en código ya está hecho y se marca abajo.
 
-- **Mínimo de caracteres:** está en 6, el default. Si lo subís, hay que actualizar `minLength` y el
-  texto de ayuda en [`src/components/auth/AuthForm.tsx`](../src/components/auth/AuthForm.tsx) y en
-  [`src/pages/ResetPassword.tsx`](../src/pages/ResetPassword.tsx), que hoy dicen 6.
-- **Protección contra contraseñas filtradas:** contrasta contra HaveIBeenPwned. Es un toggle.
+### 5.1 Política de contraseñas — **Authentication → Providers → Email** (o **Policies**)
+
+- **Mínimo de caracteres:** ✅ configurado en **8** en el dashboard. El cliente también lo exige al
+  crear contraseña (`minLength=8` en [`AuthForm.tsx`](../src/components/auth/AuthForm.tsx) para
+  registro y en [`ResetPassword.tsx`](../src/pages/ResetPassword.tsx)), y los mensajes de error de
+  [`authErrors.ts`](../src/lib/authErrors.ts) dicen 8; el login no valida largo, para no dejar
+  afuera a usuarios con contraseñas viejas. Si en el dashboard elegís otro valor, hay que igualar
+  esos tres archivos.
+- **Caracteres requeridos:** exigir dígitos + minúsculas + mayúsculas + símbolos (la opción más
+  fuerte).
+- **Contraseñas filtradas:** activar la protección contra HaveIBeenPwned. **Requiere plan Pro.**
+
+### 5.2 Rate limits — **Authentication → Rate Limits**
+
+Los defaults son laxos para una app expuesta. Bajar los que abusan de correo e identidad:
+
+- Emails enviados por hora (`rate_limit_email_sent`) — cada registro y cada "reenviar" consume uno.
+- Verificaciones (`rate_limit_verify`) y refresco de token (`rate_limit_token_refresh`).
+- Registros anónimos (`rate_limit_anonymous_users`).
+
+Se pueden tocar en el dashboard o por Management API (`PATCH /v1/projects/<ref>/config/auth`).
+
+### 5.3 Rotación de tokens — **Authentication → Sessions**
+
+- **Detección de reuso de refresh tokens:** que un refresh token robado deje de servir apenas el
+  usuario legítimo renueva. Es el control que le pone techo al riesgo residual de [SEC-2](../secure/secure002.md).
+- **Expiración del access token (JWT):** bajarla de 3600 s achica la ventana de un token filtrado.
+- **Time-box / inactividad de sesión:** limita cuánto vive una sesión sin actividad. **Requiere plan Pro.**
+
+### 5.4 CAPTCHA — **Authentication → Settings → Bot and Abuse Protection**
+
+Frena el registro masivo automatizado. **Ojo: no es solo dashboard.** Activarlo obliga a que el
+cliente mande un token de captcha en `signUp`/`signInWithPassword`; si se activa sin tocar el
+frontend, **todo el login y el registro dejan de funcionar**. Queda para una tarea propia que
+integre el widget (hCaptcha o Turnstile) en los formularios, no para este paso.
+
+### 5.5 Lista blanca de redirects
+
+Ya cubierta en la sección 2 (URL Configuration). Es parte del endurecimiento: una URL fuera de la
+lista se ignora en silencio.
 
 ---
 

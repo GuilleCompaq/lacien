@@ -20,7 +20,7 @@ const BY_CODE: Record<string, string> = {
   invalid_credentials: 'Email o contraseña incorrectos.',
   user_already_exists: 'Ese email ya tiene una cuenta. Probá iniciar sesión.',
   email_exists: 'Ese email ya tiene una cuenta. Probá iniciar sesión.',
-  weak_password: 'La contraseña necesita al menos 6 caracteres.',
+  weak_password: 'La contraseña necesita al menos 8 caracteres.',
   email_not_confirmed: 'Todavía no confirmaste tu email. Revisá tu correo.',
   over_email_send_rate_limit: 'Enviamos varios correos seguidos. Esperá unos minutos.',
   over_request_rate_limit: 'Demasiados intentos seguidos. Esperá un momento.',
@@ -32,7 +32,7 @@ const BY_CODE: Record<string, string> = {
 const BY_MESSAGE: [RegExp, string][] = [
   [/invalid login credentials/i, 'Email o contraseña incorrectos.'],
   [/user already registered|already been registered/i, 'Ese email ya tiene una cuenta. Probá iniciar sesión.'],
-  [/password should be at least/i, 'La contraseña necesita al menos 6 caracteres.'],
+  [/password should be at least/i, 'La contraseña necesita al menos 8 caracteres.'],
   [/email not confirmed/i, 'Todavía no confirmaste tu email. Revisá tu correo.'],
   [/unable to validate email address|invalid format/i, 'Revisá el email: el formato no es válido.'],
   [/for security purposes|rate limit|too many requests/i, 'Demasiados intentos seguidos. Esperá un momento.'],

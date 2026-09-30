@@ -84,7 +84,10 @@ export function AuthForm({
         <input
           type="password"
           required
-          minLength={6}
+          // El mínimo de 8 se aplica solo al crear contraseña. En el login no se
+          // valida largo: un usuario con una contraseña vieja de 6 tiene que poder
+          // entrar igual. Debe coincidir con la política del dashboard (SEC-3).
+          minLength={isNewPassword ? 8 : undefined}
           autoComplete={passwordAutoComplete}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -95,7 +98,7 @@ export function AuthForm({
         {/* La regla se lee antes de enviar, no después de que el navegador rechace. */}
         {isNewPassword && (
           <span id={hintId} className="text-xs text-text-muted">
-            Al menos 6 caracteres.
+            Al menos 8 caracteres.
           </span>
         )}
       </label>

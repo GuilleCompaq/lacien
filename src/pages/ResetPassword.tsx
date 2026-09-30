@@ -46,7 +46,7 @@ export default function ResetPassword() {
           <input
             type="password"
             required
-            minLength={6}
+            minLength={8}
             autoComplete="new-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -54,7 +54,7 @@ export default function ResetPassword() {
             className="rounded-xl border border-white/10 bg-bg-surface px-3 py-2 text-text-primary focus-visible:border-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           />
           <span id="reset-hint" className="text-xs text-text-muted">
-            Al menos 6 caracteres.
+            Al menos 8 caracteres.
           </span>
         </label>
 
